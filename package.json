@@ -1,0 +1,23 @@
+{
+  "name": "auth-proxy",
+  "version": "0.0.0",
+  "description": "An authetnicating proxy server protecting operations services.",
+  "main": "server.js",
+  "dependencies": {
+    "express": "3.x.x",
+    "connect-flash": "0.1.x",
+    "ejs": ">= 0.0.0",
+    "ejs-locals": ">= 0.0.0",
+    "passport": ">= 0.0.0",
+    "passport-local": ">= 0.0.0",
+    "http-proxy": "~0.8.7",
+    "passport-google": "0.2.0",
+    "request": "2.12.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "",
+  "license": "GPL"
+}

@@ -3,16 +3,13 @@ var fs = require('fs')
   , passport = require('passport')
   , util = require('util')
   , LocalStrategy = require('passport-local').Strategy
-  , https = require('https')
+  , http = require('http')
   , httpProxy = require('http-proxy')
   , path = require('path');
 
 var ConfigLoader = require('./lib/ConfigLoader');
 
 var config = ConfigLoader.load();
-
-
-console.log(config);
 
 var app = express();
 var proxy = new httpProxy.RoutingProxy();
@@ -24,7 +21,12 @@ app.configure(function() {
   app.use(express.logger());
   app.use(express.cookieParser());
   app.use(express.methodOverride());
-  app.use(express.session({ key: 'sid', cookie: { domain: config.cookieDomain }, secret: config.sessionSecret }));
+  var sessionConfig = {
+    key: 'sid',
+    secret: config.sessionSecret
+  };
+  var session = express.session(sessionConfig)
+  app.use(session);
   // Initialize Passport!  Also use passport.session() middleware, to support
   // persistent login sessions (recommended).
   app.use(passport.initialize());
@@ -32,9 +34,8 @@ app.configure(function() {
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
-
 app.get('/login', function(req, res){
-  res.render('login', { user: req.user, message: req.flash('error') });
+  res.render('login', {name: config.name, imageURL: config.imageURL});
 });
 
 // We add the express bodyparser middleware here so that we don't
@@ -51,5 +52,8 @@ app.get('/proxy-logout', function(req, res){
   res.redirect('/');
 });
 
-server = https.createServer(options, app);
-server.listen(config.port);
+var options = {}
+server = http.createServer(app);
+server.listen(config.port, function() {
+  console.log('now listening on ' + config.port);
+});

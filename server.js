@@ -60,23 +60,29 @@ app.configure(function() {
   // persistent login sessions (recommended).
   app.use(passport.initialize());
   app.use(passport.session());
-  app.use(app.router);
   app.use(express.static(__dirname + '/public'));
+  app.use(ensureAuthenticated);
+  app.use(app.router);
 });
 app.get('/login', function(req, res){
-  res.render('login', {name: config.name, imageURL: config.imageURL, imageAlt: config.imageAlt});
-});
-
-// We add the express bodyparser middleware here so that we don't
-// intercept posts in any other context.
-app.post('/login', express.bodyParser(),
-  passport.authenticate('local', { failureRedirect: '/proxy-login', failureFlash: true }),
-  function(req, res) {
+  /*
+  if (req.isAuthenticated()) {
     res.redirect('/');
   }
-);
+  */
+  var options = {
+    name: config.name,
+    imageURL: config.imageURL,
+    imageAlt: config.imageAlt
+  };
+  res.render('login', options);
+});
 
-app.get('/account', ensureAuthenticated, function(req, res){
+app.get('/', function(req, res) {
+  res.render('index', { name: config.name, routes: config.routes });
+});
+
+app.get('/account', function(req, res){
   console.log(req.user);
   res.render('account', { user: req.user });
 });
@@ -118,12 +124,24 @@ server.listen(config.port, function() {
   console.log('now listening on ' + config.port);
 });
 
+function inURLWhiteList(url) {
+  var whiteList = [
+    '/login',
+    '/auth/google',
+    '/oauth2callback'
+  ];
+  var url = url.split('?')[0];
+  return whiteList.indexOf(url) !== -1;
+}
+
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If
 //   the request is authenticated (typically via a persistent login session),
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
-  if (req.route.path = '/login' || req.isAuthenticated()) { return next(); }
+  if (req.isAuthenticated() || inURLWhiteList(req.url)) {
+    return next();
+  }
   res.redirect('/login');
 }

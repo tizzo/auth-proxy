@@ -2,6 +2,8 @@
   "name": "Authenticating Proxy",
   "host": "127.0.0.1",
   "port": 3009,
+  "redisHost": "127.0.0.1",
+  "redisPort": 6379,
   "sessionSecret": "secret",
   "imageURL": "http://fruitguys.com/almanac/wp-content/uploads/2012/01/chris-banana-suit-trans.png",
   "imageAlt": "Fun image"

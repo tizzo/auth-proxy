@@ -14,7 +14,8 @@
     "passport-google": "0.2.0",
     "request": "2.12.0",
     "passport-google-oauth": "~0.1.5",
-    "connect-redis": "~1.4.5"
+    "connect-redis": "~1.4.5",
+    "redis": "~0.9.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

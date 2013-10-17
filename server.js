@@ -6,7 +6,9 @@ var fs = require('fs')
   , http = require('http')
   , httpProxy = require('http-proxy')
   , path = require('path')
-  , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+  , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
+  , redis = require('redis')
+  , RedisStore = require('connect-redis')(express);
 
 var ConfigLoader = require('./lib/ConfigLoader');
 
@@ -47,12 +49,13 @@ passport.use(new GoogleStrategy({
 app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
-  app.use(express.logger());
+  //app.use(express.logger());
   app.use(express.cookieParser());
   app.use(express.methodOverride());
   var sessionConfig = {
     key: 'sid',
-    secret: config.sessionSecret
+    secret: config.sessionSecret,
+    store: new RedisStore({ host: config.redisHost, port: config.redisPort })
   };
   var session = express.session(sessionConfig)
   app.use(session);

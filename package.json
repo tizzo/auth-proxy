@@ -6,13 +6,14 @@
   "dependencies": {
     "express": "3.x.x",
     "connect-flash": "0.1.x",
-    "ejs": ">= 0.0.0",
-    "ejs-locals": ">= 0.0.0",
+    "ejs": ">= 0.8.4",
+    "ejs-locals": ">= 1.0.2",
     "passport": ">= 0.0.0",
     "passport-local": ">= 0.0.0",
     "http-proxy": "~0.8.7",
     "passport-google": "0.2.0",
-    "request": "2.12.0"
+    "request": "2.12.0",
+    "passport-google-oauth": "~0.1.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

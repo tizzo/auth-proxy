@@ -47,6 +47,7 @@ app.post('/login', express.bodyParser(),
   }
 );
 
+
 app.get('/proxy-logout', function(req, res){
   req.logout();
   res.redirect('/');

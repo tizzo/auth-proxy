@@ -60,9 +60,9 @@ app.configure(function() {
   // persistent login sessions (recommended).
   app.use(passport.initialize());
   app.use(passport.session());
-  app.use(express.static(__dirname + '/public'));
   app.use(ensureAuthenticated);
   app.use(app.router);
+  app.use(express.static(__dirname + '/public'));
 });
 app.get('/login', function(req, res){
   /*
@@ -128,7 +128,8 @@ function inURLWhiteList(url) {
   var whiteList = [
     '/login',
     '/auth/google',
-    '/oauth2callback'
+    '/oauth2callback',
+    '/css/bootstrap.css'
   ];
   var url = url.split('?')[0];
   return whiteList.indexOf(url) !== -1;

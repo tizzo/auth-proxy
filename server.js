@@ -35,7 +35,7 @@ app.configure(function() {
   app.use(express.static(__dirname + '/public'));
 });
 app.get('/login', function(req, res){
-  res.render('login', {name: config.name, imageURL: config.imageURL});
+  res.render('login', {name: config.name, imageURL: config.imageURL, imageAlt: config.imageAlt});
 });
 
 // We add the express bodyparser middleware here so that we don't

@@ -2,5 +2,7 @@
   "name": "Authenticating Proxy",
   "port": 3009,
   "sessionSecret": "secret",
-  "imageURL": "http://fruitguys.com/almanac/wp-content/uploads/2012/01/chris-banana-suit-trans.png"
+  "imageURL": "http://fruitguys.com/almanac/wp-content/uploads/2012/01/chris-banana-suit-trans.png",
+  "imageAlt": "Fun image"
+
 }

@@ -38,24 +38,10 @@
       <div class="grid">
         <div class="row-fluid">
           <div class="form-wrapper span6">
-            <div class="form">
-              <form action="/proxy-login" method="post">
-                <div>
-                  <label>Username:</label>
-                  <input type="text" name="username"/><br/>
-                </div>
-                <div>
-                  <label>Password:</label>
-                  <input type="password" name="password"/>
-                </div>
-                <div>
-                  <input type="submit" value="Submit"/>
-                </div>
-              </form>
-            </div> <!-- /form -->
+            <a href="/auth/google">Login with Google</a>
           </div> <!-- /form-wrapper -->
           <div class="image span4">
-            <img src="<%= imageUrl =>">
+            <img src="<%= imageURL %>" alt="<%= imageAlt %>">
           </div> <!-- /smithers -->
         </div> <!-- /row -->
       </div> <!-- /grid -->

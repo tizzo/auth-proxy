@@ -24,6 +24,18 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
+// Check to see if the user profile is in an allowed domian.
+function inAllowedDomain(profile) {
+  return config.allowedDomains.indexOf(profile._json.hd) !== -1;
+}
+// Check to see if the user profile is in an allowed email list.
+function inAllowedEmails(profile) {
+  console.log(profile);
+  console.log(config.allowedEmails);
+  //console.log(config)
+  return config.allowedEmails.indexOf(profile.email) !== -1;
+}
+
 // Use the GoogleStrategy within Passport.
 //   Strategies in Passport require a `verify` function, which accept
 //   credentials (in this case, an accessToken, refreshToken, and Google
@@ -31,17 +43,14 @@ passport.deserializeUser(function(obj, done) {
 passport.use(new GoogleStrategy({
     clientID: config.googleClientId,
     clientSecret: config.googleClientSecret,
-    callbackURL: "http://" + config.host + ":" + config.port + "/oauth2callback"
+    callbackURL: "http://" + config.host + ":" + config.port + "/oauth2callback",
+    failureRedirect: "login"
   },
   function(accessToken, refreshToken, profile, done) {
-    // asynchronous verification, for effect...
-    process.nextTick(function () {
-      // To keep the example simple, the user's Google profile is returned to
-      // represent the logged-in user.  In a typical application, you would want
-      // to associate the Google account with a user record in your database,
-      // and return that user instead.
-      return done(null, profile);
-    });
+    if (!inAllowedDomain(profile) || !inAllowedEmails(profile)) {
+      return done(null, null);
+    }
+    return done(null, profile);
   }
 ));
 
@@ -86,7 +95,6 @@ app.get('/', function(req, res) {
 });
 
 app.get('/account', function(req, res){
-  console.log(req.user);
   res.render('account', { user: req.user });
 });
 

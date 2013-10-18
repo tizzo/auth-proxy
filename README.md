@@ -1,5 +1,7 @@
 # Authenitcating Proxy
 
+**STATUS - This project is under active development and does not *actually work yet*, I'll keep the README up to date as this project takes shape.**
+
 This module allows you to setup a simple reverse proxy server to provide authentication for otherwise unsecured services in your infrastructure. It currently ships with integration with single signon using google apps oauth2. You must add apps domains and allowed users to a whitelist for each site.
 
 Patches adding support for 

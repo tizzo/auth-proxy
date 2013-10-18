@@ -20,6 +20,7 @@ var proxy = new httpProxy.RoutingProxy();
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
+
 passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
@@ -30,10 +31,7 @@ function inAllowedDomain(profile) {
 }
 // Check to see if the user profile is in an allowed email list.
 function inAllowedEmails(profile) {
-  console.log(profile);
-  console.log(config.allowedEmails);
-  //console.log(config)
-  return config.allowedEmails.indexOf(profile.email) !== -1;
+  return config.allowedEmails.indexOf(profile._json.email) !== -1;
 }
 
 // Use the GoogleStrategy within Passport.
@@ -73,15 +71,11 @@ app.configure(function() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(ensureAuthenticated);
+  app.use(proxyRoute);
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
 app.get('/login', function(req, res){
-  /*
-  if (req.isAuthenticated()) {
-    res.redirect('/');
-  }
-  */
   var options = {
     name: config.name,
     imageURL: config.imageURL,

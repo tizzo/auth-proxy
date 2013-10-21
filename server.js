@@ -151,3 +151,62 @@ function ensureAuthenticated(req, res, next) {
   }
   res.redirect('/login');
 }
+
+function getProxyRoute(req) {
+  for (i in config.routes) {
+    console.log(i);
+  }
+}
+
+http.createServer(function (req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.write('request successfully proxied: ' + req.url +'\n' + JSON.stringify(req.headers, true, 2));
+        res.end();
+}).listen(9000); 
+
+var proxy = new httpProxy.RoutingProxy();
+
+function proxyRoute(req, res, next) {
+  if (req.url == '/updatamator') {
+     var buffer = httpProxy.buffer(req);
+    req.url = req.url.substr(12);
+    proxy.proxyRequest(req, res, {
+      host: 'localhost',
+      port: 3000,
+      buffer: buffer
+    });
+    return;
+  }
+  return next();
+  getProxyRoute(req);
+  var _writeHead = res.writeHead;
+  // TODO: rewrite hostname as necessary
+  res.writeHead = function() {
+    _writeHead.apply(this, arguments);
+  };
+  console.log(req.url);
+  next();
+  return;
+  // TODO: Delete this legacy reference code.
+  if (req.proxyRoute) {
+    // To fix applications like Jenkins that dynamically generate absolute
+    // redirects, support rewriting redirects.
+    if (req.proxyRoute.redirectRewrite) {
+      var _writeHead = res.writeHead
+      res.writeHead = function() {
+        if (req.proxyRoute.redirectRewrite && arguments[1] != undefined && arguments[1].location) {
+          var rewritePatterns = req.proxyRoute.redirectRewrite;
+          for (pattern in rewritePatterns) {
+            var regExp = new RegExp(pattern);
+            arguments[1].location = arguments[1].location.replace(pattern, rewritePatterns[pattern]);
+          }
+        }
+        _writeHead.apply(this, arguments);
+      };
+    }
+    proxies[req.proxyRoute.route].proxyRequest(req, res);
+  }
+  else {
+    next();
+  }
+}

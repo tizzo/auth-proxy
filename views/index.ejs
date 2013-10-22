@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title><%= name %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login to our proxy">
+    <meta name="author" content="Zivtech, LLC">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+      @media (max-width: 979px) {
+        body {
+          padding-top: 0px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#"><%= name %></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="grid">
+        <div class="row-fluid">
+          <ul>
+            <% for(i in routes) { %>
+            <li><a href="<%= routes[i].path %>"><%= routes[i].name %></a>: <%s= routes[i].description %></li>
+            <% } %>
+          </ul>
+        </div> <!-- /row-fluid -->
+      </div> <!-- /grid -->
+    </div> <!-- /container -->
+
+  </body>
+</html>

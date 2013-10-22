@@ -152,12 +152,6 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
-function getProxyRoute(req) {
-  for (i in config.routes) {
-    console.log(i);
-  }
-}
-
 http.createServer(function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.write('request successfully proxied: ' + req.url +'\n' + JSON.stringify(req.headers, true, 2));
@@ -191,9 +185,18 @@ function lookupRoute(req) {
   }
 }
 
+function rewriteRequest(req, route) {
+  if (route.pathRewritePattern !== undefined) {
+    var pathRewriteRegex = new RegExp(route.path);
+    req.url = req.url.replace(pathRewriteRegex, route.pathRewritePattern);
+  }
+  return req;
+}
+
 function proxyRoute(req, res, next) {
   var route = lookupRoute(req);
   if (route) {
+    req = rewriteRequest(req, route);
     proxy.proxyRequest(req, res, {
       host: route.host,
       port: route.port

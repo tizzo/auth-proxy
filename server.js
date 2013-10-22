@@ -166,47 +166,39 @@ http.createServer(function (req, res) {
 
 var proxy = new httpProxy.RoutingProxy();
 
+// Accepts a req, looks up the route.
+function lookupRoute(req) {
+  var possibleMatches = [];
+  var routes = config.routes;
+  for (i in routes) {
+    var route = routes[i];
+    var match = true;
+    if (route.hostPattern && req.location) {
+      var hostRegex = new RegExp(route.hostPattern);
+      if (!hostRegex.test(req.location)) {
+        match = false;
+      }
+    }
+    if (route.path) {
+      var pathRegex = new RegExp(route.path);
+      if (!pathRegex.test(req.url)) {
+        match = false;
+      }
+    }
+    if (match) {
+      return route;
+    }
+  }
+}
+
 function proxyRoute(req, res, next) {
-  if (req.url == '/updatamator') {
-     var buffer = httpProxy.buffer(req);
-    req.url = req.url.substr(12);
+  var route = lookupRoute(req);
+  if (route) {
     proxy.proxyRequest(req, res, {
-      host: 'localhost',
-      port: 3000,
-      buffer: buffer
+      host: route.host,
+      port: route.port
     });
     return;
   }
   return next();
-  getProxyRoute(req);
-  var _writeHead = res.writeHead;
-  // TODO: rewrite hostname as necessary
-  res.writeHead = function() {
-    _writeHead.apply(this, arguments);
-  };
-  console.log(req.url);
-  next();
-  return;
-  // TODO: Delete this legacy reference code.
-  if (req.proxyRoute) {
-    // To fix applications like Jenkins that dynamically generate absolute
-    // redirects, support rewriting redirects.
-    if (req.proxyRoute.redirectRewrite) {
-      var _writeHead = res.writeHead
-      res.writeHead = function() {
-        if (req.proxyRoute.redirectRewrite && arguments[1] != undefined && arguments[1].location) {
-          var rewritePatterns = req.proxyRoute.redirectRewrite;
-          for (pattern in rewritePatterns) {
-            var regExp = new RegExp(pattern);
-            arguments[1].location = arguments[1].location.replace(pattern, rewritePatterns[pattern]);
-          }
-        }
-        _writeHead.apply(this, arguments);
-      };
-    }
-    proxies[req.proxyRoute.route].proxyRequest(req, res);
-  }
-  else {
-    next();
-  }
 }

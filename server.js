@@ -185,10 +185,14 @@ function lookupRoute(req) {
   }
 }
 
-function rewriteRequest(req, route) {
+function rewriteRequest(req, res, route) {
   if (route.pathRewritePattern !== undefined) {
     var pathRewriteRegex = new RegExp(route.path);
     req.url = req.url.replace(pathRewriteRegex, route.pathRewritePattern);
+  }
+  if (route.hostPattern && route.hostRewritePattern) {
+    var hostRewriteRegex = new RegExp(route.hostPattern)
+    req.headers.host = req.headers.host.replace(hostRewriteRegex, route.hostRewritePattern);
   }
   return req;
 }
@@ -196,7 +200,7 @@ function rewriteRequest(req, route) {
 function proxyRoute(req, res, next) {
   var route = lookupRoute(req);
   if (route) {
-    req = rewriteRequest(req, route);
+    req = rewriteRequest(req, res, route);
     proxy.proxyRequest(req, res, {
       host: route.host,
       port: route.port

@@ -217,7 +217,10 @@ function proxyRoute(req, res, next) {
     logger.info('%s requested %s proxying to %s', req.connection.remoteAddress, originalReq, newRequest);
     proxy.proxyRequest(req, res, {
       host: route.host,
-      port: route.port
+      port: route.port,
+      enable: {
+        xforward: true
+      }
     });
     return;
   }

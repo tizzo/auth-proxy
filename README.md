@@ -12,7 +12,8 @@ Patches adding support for
 2. `cd` into the directory and run `npm install`
 3. Create a config.json in the root of the repository, any configuration added to this json file will override the defaults (set in `default.config.json`)
 4. Setup your domain and email white lists and add your google apps credentials to the config.json file.
-5. Start the server with `npm start`
+5. Setup your routes in config.json (see the documentation and examples below).
+6. Start the server with `npm start`
 
 ### Defining Routes
 

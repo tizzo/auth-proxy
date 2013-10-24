@@ -8,7 +8,18 @@ var fs = require('fs')
   , path = require('path')
   , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
   , redis = require('redis')
-  , RedisStore = require('connect-redis')(express);
+  , RedisStore = require('connect-redis')(express)
+  , winston = require('winston');
+
+var proxy = new httpProxy.RoutingProxy();
+
+var logger = new winston.Logger();
+var options = {
+  timestamp: true,
+  colorize: true
+};
+logger.add(winston.transports.Console, options);
+
 
 var ConfigLoader = require('./lib/ConfigLoader');
 
@@ -124,10 +135,14 @@ app.get('/proxy-logout', function(req, res){
   res.redirect('/');
 });
 
-var options = {}
-server = http.createServer(app);
+var options = {
+  key: fs.readFileSync(config.sslKey),
+  cert: fs.readFileSync(config.sslCert)
+};
+
+server = https.createServer(options, app);
 server.listen(config.port, function() {
-  console.log('now listening on ' + config.port);
+  logger.info('now listening on ' + config.port);
 });
 
 function inURLWhiteList(url) {
@@ -190,10 +205,16 @@ function rewriteRequest(req, res, route) {
   return req;
 }
 
+// Middleware to proxy a route.
 function proxyRoute(req, res, next) {
+  // Lookup the route based on configuration.
   var route = lookupRoute(req);
   if (route) {
+    var originalReq = req.headers.host + req.url;
+    // Rewrite the request as configured for this route.
     req = rewriteRequest(req, res, route);
+    var newRequest = route.host + ':' + route.port + req.url;
+    logger.info('%s requested %s proxying to %s', req.connection.remoteAddress, originalReq, newRequest);
     proxy.proxyRequest(req, res, {
       host: route.host,
       port: route.port

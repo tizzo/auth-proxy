@@ -45,6 +45,10 @@ function inAllowedEmails(profile) {
   return config.allowedEmails.indexOf(profile._json.email) !== -1;
 }
 
+function getBaseUrl() {
+  return "https://" + config.host + ":" + config.port;
+}
+
 // Use the GoogleStrategy within Passport.
 //   Strategies in Passport require a `verify` function, which accept
 //   credentials (in this case, an accessToken, refreshToken, and Google
@@ -52,7 +56,7 @@ function inAllowedEmails(profile) {
 passport.use(new GoogleStrategy({
     clientID: config.googleClientId,
     clientSecret: config.googleClientSecret,
-    callbackURL: "https://" + config.host + ":" + config.port + "/oauth2callback",
+    callbackURL: getBaseUrl() + "/oauth2callback",
     failureRedirect: "login"
   },
   function(accessToken, refreshToken, profile, done) {
@@ -81,7 +85,7 @@ app.configure(function() {
   // persistent login sessions (recommended).
   app.use(passport.initialize());
   app.use(passport.session());
-  //app.use(ensureAuthenticated);
+  app.use(ensureAuthenticated);
   app.use(proxyRoute);
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
@@ -210,6 +214,35 @@ function rewriteRequest(req, route) {
   return req;
 }
 
+var trumpet = require('trumpet');
+
+function rewriteStream(res) {
+  var _write = res.write;
+  var tr = trumpet();
+  tr.pipe(res);
+  tr.writeHead = res.writeHead;
+  tr._storeHeader = res._storeHeader;
+  tr.on('error', function(error) {
+    logger.error('HTML parsing failed', error);
+  });
+  /*
+  var ws = tr.select('head').createWriteStream();
+  ws.end('<base href="' + getBaseUrl() + '/unfoggle/">');
+  */
+  //*
+  tr.selectAll('link', function(elem) {
+    elem.getAttribute('href', function(ref) {
+      elem.setAttribute('href', '/unfoggle' + ref);
+    });
+    var src = elem.getAttribute('src', function(src) {
+      console.log(src);
+      elem.setAttribute('src', '/unfoggle' + src);
+    });
+  });
+  //*/
+  return tr;
+}
+
 // Middleware to proxy a route.
 function proxyRoute(req, res, next) {
   // Lookup the route based on configuration.
@@ -221,6 +254,9 @@ function proxyRoute(req, res, next) {
     var newRequest = route.host + ':' + route.port + req.url;
     logger.info('%s at %s has requested %s proxying to %s', req.user._json.email, req.connection.remoteAddress, originalReq, newRequest);
     // Proxy the request and response.
+    if (true) {
+      res = rewriteStream(res);
+    }
     proxy.proxyRequest(req, res, {
       host: route.host,
       port: route.port,

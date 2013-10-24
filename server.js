@@ -81,7 +81,7 @@ app.configure(function() {
   // persistent login sessions (recommended).
   app.use(passport.initialize());
   app.use(passport.session());
-  //app.use(ensureAuthenticated);
+  app.use(ensureAuthenticated);
   app.use(proxyRoute);
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
@@ -185,8 +185,8 @@ function lookupRoute(req) {
         match = false;
       }
     }
-    if (route.path) {
-      var pathRegex = new RegExp(route.path);
+    if (route.pathPattern) {
+      var pathRegex = new RegExp(route.pathPattern);
       if (!pathRegex.test(req.url)) {
         match = false;
       }
@@ -200,7 +200,7 @@ function lookupRoute(req) {
 // Rewrite the request object based on configured patterns.
 function rewriteRequest(req, route) {
   if (route.pathRewritePattern !== undefined) {
-    var pathRewriteRegex = new RegExp(route.path);
+    var pathRewriteRegex = new RegExp(route.pathPattern);
     req.url = req.url.replace(pathRewriteRegex, route.pathRewritePattern);
   }
   if (route.hostPattern && route.hostRewritePattern) {

@@ -25,12 +25,13 @@ The routes configuration key is an array of route objects. This list of routes i
 - `description` A description for the route.
 - `host` The host to proxy matching requests to.
 - `port` The port at `host` to route the requests to.
+- `link` This is used on the home page to link to this resource. This can be relative if paths are used to match or absolute for hosts.
 
 #### Optional configuration keys
 
-- `path` A regex of the path to match, usually this should start with a `^/` (to match only instances at the beginning of the path and end with `/?` to optionally allow a trailing slash.
+- `pathPattern` A regex of the path to match, usually this should start with a `^/` (to match only instances at the beginning of the path and end with `/?` to optionally allow a trailing slash.
 - `hostPattern` A regex to search for host to match for incomming routes. This allows you to route to different applications based on host name.
-- `pathRewritePattern` This rewrites the request path sent to the backend used for this route. This may use regex matches from the `path` setting in normal javascript `replace()` syntax.
+- `pathRewritePattern` This rewrites the request path sent to the backend used for this route. This may use regex matches from the `pathPattern` setting in normal javascript `replace()` syntax.
 - `hostRewritePattern` This rewrite the request host sent in the headers to the backend for this route. Like `pathRewritePattern` this may use tokens from the `hostPattern` regex as per the normal javascript `replace()` syntax.
 
 #### Configuration example
@@ -39,10 +40,11 @@ The routes configuration key is an array of route objects. This list of routes i
 "routes": [
   {
     "name": "Unfoggle",
+
     "description": "Tracking time ahs never been so easy!",
     "host": "localhost",
     "port": 3000,
-    "path": "^/unfoggle/?"
+    "pathPattern": "^/unfoggle/?"
   },
   {
     "name": "Taskaholic",
@@ -50,11 +52,11 @@ The routes configuration key is an array of route objects. This list of routes i
     "pathRewritePattern": "/",
     "host": "localhost",
     "port": 9001,
-    "path": "^/taskaholic/?"
+    "pathPattern": "^/taskaholic/?"
   },
   {
     "name": "test route",
-    "path": "^/test/?",
+    "pathPattern": "^/test/?",
     "description": "debug info",
     "pathRewritePattern": "/",
     "host": "localhost",

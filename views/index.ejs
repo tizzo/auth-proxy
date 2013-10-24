@@ -39,7 +39,7 @@
         <div class="row-fluid">
           <ul>
             <% for(i in routes) { %>
-            <li><a href="<%= routes[i].path %>"><%= routes[i].name %></a>: <%s= routes[i].description %></li>
+            <li><a href="<%= routes[i].link %>"><%= routes[i].name %></a>: <%= routes[i].description %></li>
             <% } %>
           </ul>
         </div> <!-- /row-fluid -->

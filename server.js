@@ -3,7 +3,7 @@ var fs = require('fs')
   , passport = require('passport')
   , util = require('util')
   , LocalStrategy = require('passport-local').Strategy
-  , http = require('http')
+  , https = require('https')
   , httpProxy = require('http-proxy')
   , path = require('path')
   , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
@@ -41,7 +41,7 @@ function inAllowedEmails(profile) {
 passport.use(new GoogleStrategy({
     clientID: config.googleClientId,
     clientSecret: config.googleClientSecret,
-    callbackURL: "http://" + config.host + ":" + config.port + "/oauth2callback",
+    callbackURL: "https://" + config.host + ":" + config.port + "/oauth2callback",
     failureRedirect: "login"
   },
   function(accessToken, refreshToken, profile, done) {
@@ -70,11 +70,12 @@ app.configure(function() {
   // persistent login sessions (recommended).
   app.use(passport.initialize());
   app.use(passport.session());
-  app.use(ensureAuthenticated);
+  //app.use(ensureAuthenticated);
   app.use(proxyRoute);
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
+
 app.get('/login', function(req, res){
   var options = {
     name: config.name,

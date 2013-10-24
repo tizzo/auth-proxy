@@ -115,18 +115,20 @@ app.get('/auth/google',
   function(req, res){
     // The request will be redirected to Google for authentication, so this
     // function will not be called.
-  });
+  }
+);
 
 // GET /auth/google/callback
 //   Use passport.authenticate() as route middleware to authenticate the
 //   request.  If authentication fails, the user will be redirected back to the
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
-app.get('/oauth2callback', 
+app.get('/oauth2callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
     res.redirect('/');
-  });
+  }
+);
 
 
 
@@ -145,6 +147,8 @@ server.listen(config.port, function() {
   logger.info('now listening on ' + config.port);
 });
 
+// Check whether the url is in a white-list of paths that do
+// not require authentication.
 function inURLWhiteList(url) {
   var whiteList = [
     '/login',
@@ -193,7 +197,8 @@ function lookupRoute(req) {
   }
 }
 
-function rewriteRequest(req, res, route) {
+// Rewrite the request object based on configured patterns.
+function rewriteRequest(req, route) {
   if (route.pathRewritePattern !== undefined) {
     var pathRewriteRegex = new RegExp(route.path);
     req.url = req.url.replace(pathRewriteRegex, route.pathRewritePattern);
@@ -212,9 +217,10 @@ function proxyRoute(req, res, next) {
   if (route) {
     var originalReq = req.headers.host + req.url;
     // Rewrite the request as configured for this route.
-    req = rewriteRequest(req, res, route);
+    req = rewriteRequest(req, route);
     var newRequest = route.host + ':' + route.port + req.url;
-    logger.info('%s requested %s proxying to %s', req.connection.remoteAddress, originalReq, newRequest);
+    logger.info('%s at %s has requested %s proxying to %s', req.user._json.email, req.connection.remoteAddress, originalReq, newRequest);
+    // Proxy the request and response.
     proxy.proxyRequest(req, res, {
       host: route.host,
       port: route.port,

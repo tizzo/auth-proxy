@@ -4,7 +4,7 @@
 
 This module is a little bit of glue wrapping [express](http://expressjs.com/), [passport](http://passportjs.org/), and [HTTP Proxy](https://github.com/nodejitsu/node-http-proxy).  It allows you to setup a simple reverse proxy server to provide authentication for otherwise unsecured services in your infrastructure. It currently ships with integration with single signon using google apps oauth2. You must add apps domains and allowed users to a whitelist before anyone can authenticate, you'll also need to define your proxy routes.
 
-Patches adding support for 
+Patches adding support for other authentication strategies are most welcome.
 
 ## Installation
 
@@ -14,6 +14,10 @@ Patches adding support for
 4. Setup your domain and email white lists and add your google apps credentials to the config.json file.
 5. Setup your routes in config.json (see the documentation and examples below).
 6. Start the server with `npm start`
+
+### Configuring
+
+The `default.config.json` file holds the default configuration used by the proxy. If a `config.json` file is created in the root of the repository then any keys set will override defaults set in the default configuration file. Environment variables will override anything set in the configuration files. Environment variables can be set for any configuration key but are converted (all capital letters with underscores rather than camel case.
 
 ### Defining Routes
 

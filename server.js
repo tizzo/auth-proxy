@@ -145,6 +145,14 @@ var options = {
 server = https.createServer(options, app);
 server.listen(config.port, function() {
   logger.info('now listening on ' + config.port);
+  if (config.proxyUser) {
+    logger.info('switching to user ' + config.proxyUser);
+    process.setuid(config.proxyUser);
+  }
+  if (config.proxyGroup) {
+    logger.info('switching to group ' + config.proxyGroup);
+    process.setgid(config.proxyGroup);
+  }
 });
 
 // Check whether the url is in a white-list of paths that do

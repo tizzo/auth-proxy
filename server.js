@@ -4,6 +4,7 @@ var fs = require('fs')
   , util = require('util')
   , LocalStrategy = require('passport-local').Strategy
   , https = require('https')
+  , http = require('http')
   , httpProxy = require('http-proxy')
   , path = require('path')
   , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
@@ -146,9 +147,40 @@ var options = {
   cert: fs.readFileSync(config.sslCert)
 };
 
+httpServer = http.createServer(function (req, res) {
+  var location = req.headers.host + req.url;
+  logger.info('Redirecting http://%s to https://%s', 'http://' + location, 'https://' + location);
+  res.writeHead(301, { location: 'https://' + location });
+  res.end();
+});
+httpServer.on('listening', function() {
+  var message = 'now redirecting http requests on port %d to https on port %s';
+  logger.info(message, config.httpPort, config.port);
+});
+
+// Start the server(s).
+function start() {
+  if (config.httpPort) {
+    httpServer.listen(config.httpPort);
+  }
+  server.listen(config.port);
+}
+
+// Stop the server(s).
+function stop() {
+  server.close(function() {
+    logger.info('stopping https server on %s', config.port);
+  });
+  if (config.httpPort) {
+    httpServer.close(function() {
+      logger.info('stopping http redirect server on %s', config.httpPort);
+    });
+  }
+}
+
 server = https.createServer(options, app);
 server.on('listening', function() {
-  logger.info('now listening on ' + config.port);
+  logger.info('now listening to https traffic on port %s', config.port);
   if (config.proxyUser) {
     logger.info('switching to user ' + config.proxyUser);
     process.setuid(config.proxyUser);
@@ -246,6 +278,7 @@ function proxyRoute(req, res, next) {
 }
 
 module.exports = {};
+module.exports.start = start;
 module.exports.server = server;
 module.exports.config = config;
 module.exports.app = app;

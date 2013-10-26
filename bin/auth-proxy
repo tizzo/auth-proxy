@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+var proxy = require('../server.js');
+var server = proxy.server;
+server.listen(proxy.config.port);
+
+

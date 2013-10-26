@@ -40,6 +40,7 @@ passport.deserializeUser(function(obj, done) {
 function inAllowedDomain(profile) {
   return config.allowedDomains.indexOf(profile._json.hd) !== -1;
 }
+
 // Check to see if the user profile is in an allowed email list.
 function inAllowedEmails(profile) {
   return config.allowedEmails.indexOf(profile._json.email) !== -1;
@@ -87,6 +88,7 @@ app.configure(function() {
   app.use(express.static(__dirname + '/public'));
 });
 
+// A path to login to the proxy, only accessible if you are not logged in.
 app.get('/login', function(req, res){
   var options = {
     name: config.name,
@@ -96,6 +98,7 @@ app.get('/login', function(req, res){
   res.render('login', options);
 });
 
+// An index of available services and their descriptions.
 app.get('/', function(req, res) {
   res.render('index', { name: config.name, routes: config.routes });
 });
@@ -130,8 +133,7 @@ app.get('/oauth2callback',
   }
 );
 
-
-
+// A route to logout the user.
 app.get('/proxy-logout', function(req, res){
   req.logout();
   res.redirect('/');
@@ -143,7 +145,7 @@ var options = {
 };
 
 server = https.createServer(options, app);
-server.listen(config.port, function() {
+server.on('listening', function() {
   logger.info('now listening on ' + config.port);
   if (config.proxyUser) {
     logger.info('switching to user ' + config.proxyUser);
@@ -240,3 +242,9 @@ function proxyRoute(req, res, next) {
   }
   return next();
 }
+
+module.exports = {};
+module.exports.server = server;
+module.exports.config = config;
+module.exports.app = app;
+

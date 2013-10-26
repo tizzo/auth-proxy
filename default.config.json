@@ -1,5 +1,6 @@
 {
   "name": "Authenticating Proxy",
+  "processName": "auth-proxy",
   "host": "127.0.0.1",
   "port": 3009,
   "sslCert": "test/ssl/cert.pem",

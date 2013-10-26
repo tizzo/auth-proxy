@@ -25,6 +25,8 @@ var ConfigLoader = require('./lib/ConfigLoader');
 
 var config = ConfigLoader.load();
 
+process.title = config.processName;
+
 var app = express();
 var proxy = new httpProxy.RoutingProxy();
 

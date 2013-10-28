@@ -22,19 +22,22 @@ var options = {
 logger.add(winston.transports.Console, options);
 
 
+// Load configuration.
 var ConfigLoader = require('./lib/ConfigLoader');
-
 var config = ConfigLoader.load();
 
+// Set the name of our process.
 process.title = config.processName;
 
 var app = express();
 var proxy = new httpProxy.RoutingProxy();
 
+// Dead simple serialization does not actually save user info.
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
 
+// Dead simple serialization does not actually load user info.
 passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
@@ -115,14 +118,13 @@ app.get('/account', function(req, res){
 //   request.  The first step in Google authentication will involve
 //   redirecting the user to google.com.  After authorization, Google
 //   will redirect the user back to this application at /auth/google/callback
-app.get('/auth/google',
-  passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile',
-                                            'https://www.googleapis.com/auth/userinfo.email'] }),
-  function(req, res){
-    // The request will be redirected to Google for authentication, so this
-    // function will not be called.
-  }
-);
+var googleConf = {
+  scope: [
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/userinfo.email'
+  ]
+};
+app.get('/auth/google', passport.authenticate('google', googleConf));
 
 // GET /auth/google/callback
 //   Use passport.authenticate() as route middleware to authenticate the

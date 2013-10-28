@@ -149,9 +149,14 @@ var options = {
   cert: fs.readFileSync(config.sslCert)
 };
 
+// Create a server for redirecting unencrypted requests to SSL.
 httpServer = http.createServer(function (req, res) {
-  var location = req.headers.host + req.url;
-  logger.info('Redirecting http://%s to https://%s', 'http://' + location, 'https://' + location);
+  var host = req.headers.host.split(':')[0];
+  if (config.port !== '443') {
+    host = host + ':' + config.port;
+  }
+  var location = host + req.url;
+  logger.info('Redirecting http://%s to https://%s', location, location);
   res.writeHead(301, { location: 'https://' + location });
   res.end();
 });

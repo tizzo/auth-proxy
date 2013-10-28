@@ -21,7 +21,6 @@ var options = {
 };
 logger.add(winston.transports.Console, options);
 
-
 // Load configuration.
 var ConfigLoader = require('./lib/ConfigLoader');
 var config = ConfigLoader.load();
@@ -70,7 +69,7 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-// configure Express
+// Configure Express
 app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
@@ -84,8 +83,6 @@ app.configure(function() {
   };
   var session = express.session(sessionConfig)
   app.use(session);
-  // Initialize Passport!  Also use passport.session() middleware, to support
-  // persistent login sessions (recommended).
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(ensureAuthenticated);

@@ -274,7 +274,16 @@ function rewriteRequest(req, route) {
 // Rewrite the request to ensure that the location header is properly rewritten.
 function rewriteResponse(res, route) {
   var _writeHead = res.writeHead
+  var sent = false;
   res.writeHead = function() {
+    if (sent) {
+      logger.error('Response headers already sent but http-proxy tried to send them again.');
+      res.end();
+      return;
+    }
+    // TODO: Due to https://github.com/nodejitsu/node-http-proxy/pull/388 we
+    // need to make sure we don't send headers twice.
+
     if (arguments[1].location) {
       if (route.hostPattern && route.hostRewritePattern) {
         arguments[1].location = arguments[1].location.replace(route.hostPattern, route.hostRewritePattern);
@@ -282,8 +291,9 @@ function rewriteResponse(res, route) {
       // Ensure that our location is being written with the ssl protocol.
       arguments[1].location = arguments[1].location.replace(/^http:/, 'https:');
     }
+    sent = true;
     _writeHead.apply(this, arguments);
-    };
+  };
   return res;
 }
 

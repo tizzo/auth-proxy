@@ -98,6 +98,9 @@ app.configure(function() {
 
 // A path to login to the proxy, only accessible if you are not logged in.
 app.get('/login', function(req, res){
+  if (req.isAuthenticated()) {
+    res.redirect(req.session.redirectTo);
+  }
   var options = {
     name: config.name,
     imageURL: config.imageURL,
@@ -228,7 +231,7 @@ function ensureAuthenticated(req, res, next) {
     return next();
   }
   // TODO: Is there a better way to find people using favicons?
-  if (!req.url.match('favicon.ico')) {
+  if (req.url.match('favicon.ico') == null) {
     req.session.redirectTo = req.url;
   }
   res.redirect('/login');

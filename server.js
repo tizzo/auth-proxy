@@ -136,7 +136,12 @@ app.get('/auth/google', passport.authenticate('google', googleConf));
 app.get('/oauth2callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
+    if (req.session.redirectTo) {
+      res.redirect(req.session.redirectTo);
+    }
+    else {
+      res.redirect('/');
+    }
   }
 );
 
@@ -222,6 +227,7 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated() || inURLWhiteList(req.url)) {
     return next();
   }
+  req.session.redirectTo = req.url;
   res.redirect('/login');
 }
 

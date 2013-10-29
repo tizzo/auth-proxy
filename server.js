@@ -260,7 +260,25 @@ function rewriteRequest(req, route) {
     var hostRewriteRegex = new RegExp(route.hostPattern)
     req.headers.host = req.headers.host.replace(hostRewriteRegex, route.hostRewritePattern);
   }
+  req.headers['X-Forwarded-User'] = req.user._json.email;
+
   return req;
+}
+
+// Rewrite the request to ensure that the location header is properly rewritten.
+function rewriteResponse(res, route) {
+  var _writeHead = res.writeHead
+  res.writeHead = function() {
+    if (arguments[1].location) {
+      if (route.hostPattern && route.hostRewritePattern) {
+        arguments[1].location = arguments[1].location.replace(route.hostPattern, route.hostRewritePattern);
+      }
+      // Ensure that our location is being written with the ssl protocol.
+      arguments[1].location = arguments[1].location.replace(/^http:/, 'https:');
+    }
+    _writeHead.apply(this, arguments);
+    };
+  return res;
 }
 
 // Middleware to proxy a route.
@@ -271,6 +289,7 @@ function proxyRoute(req, res, next) {
     var originalReq = req.headers.host + req.url;
     // Rewrite the request as configured for this route.
     req = rewriteRequest(req, route);
+    res = rewriteResponse(res, route);
     var newRequest = route.host + ':' + route.port + req.url;
     logger.info('%s at %s has requested %s proxying to %s', req.user._json.email, req.connection.remoteAddress, originalReq, newRequest);
     // Proxy the request and response.

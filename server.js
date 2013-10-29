@@ -227,7 +227,10 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated() || inURLWhiteList(req.url)) {
     return next();
   }
-  req.session.redirectTo = req.url;
+  // TODO: Is there a better way to find people using favicons?
+  if (!req.url.match('favicon.ico')) {
+    req.session.redirectTo = req.url;
+  }
   res.redirect('/login');
 }
 

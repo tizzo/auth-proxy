@@ -42,13 +42,13 @@ passport.deserializeUser(function(obj, done) {
 });
 
 // Check to see if the user profile is in an allowed domian.
-function inAllowedDomain(profile) {
-  return config.allowedDomains.indexOf(profile._json.hd) !== -1;
+function inAllowedDomain(domain) {
+  return config.allowedDomains.indexOf(domain) !== -1;
 }
 
 // Check to see if the user profile is in an allowed email list.
-function inAllowedEmails(profile) {
-  return config.allowedEmails.indexOf(profile._json.email) !== -1;
+function inAllowedEmails(email) {
+  return config.allowedEmails.indexOf(email) !== -1;
 }
 
 // Use the GoogleStrategy within Passport.
@@ -62,7 +62,12 @@ passport.use(new GoogleStrategy({
     failureRedirect: "login"
   },
   function(accessToken, refreshToken, profile, done) {
-    if (!inAllowedDomain(profile) || !inAllowedEmails(profile)) {
+    if (!inAllowedDomain(profile._json.hd)) {
+      logger.info('user from domain %s denied access to requested resource', profile._json.hd);
+      return done(null, null);
+    }
+    if (!inAllowedEmails(profile._json.email)) {
+      logger.info('%s denied access to requested resource', profile._json.email);
       return done(null, null);
     }
     return done(null, profile);
@@ -73,7 +78,6 @@ passport.use(new GoogleStrategy({
 app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
-  //app.use(express.logger());
   app.use(express.cookieParser());
   app.use(express.methodOverride());
   var sessionConfig = {
@@ -87,6 +91,7 @@ app.configure(function() {
   app.use(passport.session());
   app.use(ensureAuthenticated);
   app.use(proxyRoute);
+  app.use(express.logger());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });

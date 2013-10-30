@@ -161,7 +161,12 @@ var options = {
 
 // Create a server for redirecting unencrypted requests to SSL.
 httpServer = http.createServer(function (req, res) {
-  var host = req.headers.host.split(':')[0];
+  if (req.headers && req.headers.host) {
+    var host = req.headers.host.split(':')[0];
+  }
+  else {
+    var host = config.host;
+  }
   if (config.port !== '443') {
     host = host + ':' + config.port;
   }

@@ -278,7 +278,11 @@ function rewriteRequest(req, route) {
     req.headers.host = req.headers.host.replace(hostRewriteRegex, route.hostRewritePattern);
   }
   req.headers['X-Forwarded-User'] = req.user._json.email;
-
+  // Allow the auth proxy to supply basic auth for systems that require some form of auth.
+  if (route.basicAuth && route.basicAuth.name && route.basicAuth.password) {
+    var authString = (new Buffer(route.basicAuth.name + ':' + route.basicAuth.password, "ascii")).toString("base64");
+    req.headers.Authorization = 'Basic ' + authString;
+  }
   return req;
 }
 

@@ -37,6 +37,7 @@ The routes configuration key is an array of route objects. This list of routes i
 - `hostPattern` A regex to search for host to match for incomming routes. This allows you to route to different applications based on host name.
 - `pathRewritePattern` This rewrites the request path sent to the backend used for this route. This may use regex matches from the `pathPattern` setting in normal javascript `replace()` syntax.
 - `hostRewritePattern` This rewrite the request host sent in the headers to the backend for this route. Like `pathRewritePattern` this may use tokens from the `hostPattern` regex as per the normal javascript `replace()` syntax.
+- `basicAuth` An object with attributes of `name` and `password`. This will be added as http basic auth for all requests proxied through this route.
 
 #### Configuration example
 

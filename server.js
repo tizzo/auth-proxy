@@ -22,12 +22,14 @@ var options = {
 logger.add(winston.transports.Console, options);
 
 // Load configuration.
+// TODO: Support specifying a configuration file path (maybe yaml?).
 var ConfigLoader = require('./lib/ConfigLoader');
 var config = ConfigLoader.load();
 
 // Set the name of our process.
 process.title = config.processName;
 
+// Load the modules that do all of the work.
 var app = express();
 var proxy = new httpProxy.RoutingProxy();
 
@@ -42,7 +44,7 @@ passport.deserializeUser(function(obj, done) {
 });
 
 // Check to see if the user profile is in an allowed domian.
-function inAllowedDomain(domain) {
+function inAllowedDomains(domain) {
   return config.allowedDomains.indexOf(domain) !== -1;
 }
 
@@ -62,10 +64,12 @@ passport.use(new GoogleStrategy({
     failureRedirect: "login"
   },
   function(accessToken, refreshToken, profile, done) {
-    if (!inAllowedDomain(profile._json.hd)) {
+    // TODO: Improve serialize/deserialize so we don't use naked _json here.
+    if (!inAllowedDomains(profile._json.hd)) {
       logger.info('user from domain %s denied access to requested resource', profile._json.hd);
       return done(null, null);
     }
+    // TODO: Improve serialize/deserialize so we don't use naked _json here.
     if (!inAllowedEmails(profile._json.email)) {
       logger.info('%s denied access to requested resource', profile._json.email);
       return done(null, null);
@@ -337,8 +341,10 @@ function proxyRoute(req, res, next) {
 }
 
 module.exports = {};
-module.exports.start = start;
-module.exports.server = server;
-module.exports.config = config;
 module.exports.app = app;
+module.exports.config = config;
+module.exports.server = server;
+module.exports.logger = logger;
+module.exports.start = start;
+module.exports.stop = stop;
 

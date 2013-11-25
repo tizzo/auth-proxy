@@ -1,5 +1,17 @@
 #!/usr/bin/env node
+
+// Include the main application.
 var proxy = require('../server.js');
+var logger = proxy.logger;
+
 proxy.start();
 
+process.on('SIGINT', function() {
+  logger.info('Stop signal received, shutting down.');
+  proxy.stop();
+})
 
+process.on('SIGHUP', function() {
+  logger.error('No handler is setup for SIGHUP at this time');
+  process.exit(1);
+});

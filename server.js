@@ -229,6 +229,9 @@ function rewriteRequest(req, route) {
     var authString = (new Buffer(route.basicAuth.name + ':' + route.basicAuth.password, "ascii")).toString("base64");
     req.headers.Authorization = 'Basic ' + authString;
   }
+  if (req.user && req.user._json && req.user._json.email) {
+    req.headers['X-Forwarded-User'] = req.user._json.email;
+  }
   return req;
 }
 
@@ -268,7 +271,9 @@ function proxyRoute(req, res, next) {
     req = rewriteRequest(req, route);
     res = rewriteResponse(res, route);
     var newRequest = route.host + ':' + route.port + req.url;
-    logger.info('%s at %s has requested %s proxying to %s', req.user._json.email, req.connection.remoteAddress, originalReq, newRequest);
+    if (req.user._json.email) {
+      logger.info('%s at %s has requested %s proxying to %s', req.user._json.email, req.connection.remoteAddress, originalReq, newRequest);
+    }
     // Proxy the request and response.
     proxy.proxyRequest(req, res, {
       host: route.host,

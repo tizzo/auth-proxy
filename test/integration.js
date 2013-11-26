@@ -87,6 +87,7 @@ describe('Server', function(){
     var options = {
       uri: 'https://127.0.0.1:' + ports[0],
       followRedirect: false,
+      strictSSL: false,
       // Empty out the cookie jar to ensure we don't accidentally auth if these tests run twice.
       jar: new request.jar()
     };

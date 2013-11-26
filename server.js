@@ -84,11 +84,6 @@ app.get('/', function(req, res) {
   res.render('index', { name: config.name, routes: config.routes });
 });
 
-app.get('/account', function(req, res){
-  res.render('account', { user: req.user });
-});
-
-
 // A route to logout the user.
 app.get('/proxy-logout', function(req, res){
   req.logout();

@@ -61,7 +61,8 @@ app.configure(function() {
   app.use(passport.session());
   app.use(ensureAuthenticated);
   app.use(proxyRoute);
-  app.use(express.logger());
+  // Allow this to be toggleable with verbose logging.
+  //app.use(express.logger());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });

@@ -109,7 +109,7 @@ httpServer = http.createServer(function (req, res) {
   var location = host + req.url;
   logger.info('Redirecting http://%s to https://%s', location, location);
   res.writeHead(301, { location: 'https://' + location });
-  res.end();
+  res.end('This resource is only available over SSL, please use https://' + location);
 });
 httpServer.on('listening', function() {
   var message = 'now redirecting http requests on port %d to https on port %s';

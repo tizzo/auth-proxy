@@ -2,6 +2,7 @@ var assert = require("assert")
 var app = require('../index.js');
 var portastic = require('portastic');
 var request = require('request');
+require('should');
 
 var Route = app.Route;
 

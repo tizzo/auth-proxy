@@ -162,6 +162,7 @@ server.on('listening', function() {
 function inURLWhiteList(url) {
   var whiteList = [
     '/login',
+    '/mockAuth',
     '/auth/google',
     '/oauth2callback',
     '/css/bootstrap.css'
@@ -190,14 +191,19 @@ function ensureAuthenticated(req, res, next) {
 
 // Accepts a req, looks up the route.
 function lookupRoute(req) {
+  // TODO: There may be a better way to do this, but we shouldn't pass
+  // anything in the whitelist to the backend.
+  if (inURLWhiteList(req.url)) {
+    return;
+  }
   var possibleMatches = [];
   var routes = config.routes;
   for (i in routes) {
     var route = routes[i];
     var match = true;
-    if (route.hostPattern && req.location) {
+    if (route.hostPattern && req.headers && req.headers.host) {
       var hostRegex = new RegExp(route.hostPattern);
-      if (!hostRegex.test(req.location)) {
+      if (!hostRegex.test(req.headers.host)) {
         match = false;
       }
     }

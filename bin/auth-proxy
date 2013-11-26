@@ -4,6 +4,9 @@
 var proxy = require('../server.js');
 var logger = proxy.logger;
 
+// TODO: Setup a better way to configure this.
+require('../lib/plugins/GoogleOAuth2').attach(proxy.passport, proxy.app, proxy.config);
+
 proxy.start();
 
 process.on('SIGINT', function() {

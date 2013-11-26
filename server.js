@@ -7,7 +7,6 @@ var fs = require('fs')
   , http = require('http')
   , httpProxy = require('http-proxy')
   , path = require('path')
-  , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
   , redis = require('redis')
   , RedisStore = require('connect-redis')(express)
   , winston = require('winston');
@@ -89,35 +88,6 @@ app.get('/account', function(req, res){
   res.render('account', { user: req.user });
 });
 
-// GET /auth/google
-//   Use passport.authenticate() as route middleware to authenticate the
-//   request.  The first step in Google authentication will involve
-//   redirecting the user to google.com.  After authorization, Google
-//   will redirect the user back to this application at /auth/google/callback
-var googleConf = {
-  scope: [
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/userinfo.email'
-  ]
-};
-app.get('/auth/google', passport.authenticate('google', googleConf));
-
-// GET /auth/google/callback
-//   Use passport.authenticate() as route middleware to authenticate the
-//   request.  If authentication fails, the user will be redirected back to the
-//   login page.  Otherwise, the primary route function function will be called,
-//   which, in this example, will redirect the user to the home page.
-app.get('/oauth2callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  function(req, res) {
-    if (req.session.redirectTo) {
-      res.redirect(req.session.redirectTo);
-    }
-    else {
-      res.redirect('/');
-    }
-  }
-);
 
 // A route to logout the user.
 app.get('/proxy-logout', function(req, res){
@@ -312,6 +282,7 @@ function proxyRoute(req, res, next) {
 
 module.exports = {};
 module.exports.app = app;
+module.exports.passport = passport;
 module.exports.config = config;
 module.exports.server = server;
 module.exports.logger = logger;

@@ -175,7 +175,9 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated() || inURLWhiteList(req.url)) {
     return next();
   }
-  // TODO: Is there a better way to find people using favicons?
+  // Browsers often send favicon requests after the initial load.
+  // We don't want to redirect people to the favicon.
+  // Save the original destination in the session.
   if (req.url.match('favicon.ico') == null) {
     req.session.redirectTo = req.url;
   }

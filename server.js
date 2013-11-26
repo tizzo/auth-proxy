@@ -118,11 +118,15 @@ httpServer.on('listening', function() {
 });
 
 // Start the server(s).
-function start() {
-  if (config.httpPort) {
-    httpServer.listen(config.httpPort);
-  }
-  server.listen(config.port);
+function start(done) {
+  server.listen(config.port, function(error) {
+    if (config.httpPort) {
+      httpServer.listen(config.httpPort, done);
+    }
+    else {
+      done(error);
+    }
+  });
 }
 
 // Stop the server(s).

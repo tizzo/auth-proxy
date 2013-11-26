@@ -21,7 +21,9 @@
     "winston": "~0.7.2",
     "mocha": "~1.14.0",
     "assert": "~0.4.9",
-    "portastic": "0.0.1"
+    "portastic": "0.0.1",
+    "should": "~2.1.0",
+    "async": "~0.2.9"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha",

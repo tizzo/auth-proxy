@@ -32,6 +32,7 @@ process.title = config.processName;
 // Load the modules that do all of the work.
 var app = express();
 var proxy = new httpProxy.RoutingProxy();
+var redisClient = null;
 
 // Dead simple serialization does not actually save user info.
 passport.serializeUser(function(user, done) {
@@ -43,51 +44,17 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-// Check to see if the user profile is in an allowed domian.
-function inAllowedDomains(domain) {
-  return config.allowedDomains.indexOf(domain) !== -1;
-}
-
-// Check to see if the user profile is in an allowed email list.
-function inAllowedEmails(email) {
-  return config.allowedEmails.indexOf(email) !== -1;
-}
-
-// Use the GoogleStrategy within Passport.
-//   Strategies in Passport require a `verify` function, which accept
-//   credentials (in this case, an accessToken, refreshToken, and Google
-//   profile), and invoke a callback with a user object.
-passport.use(new GoogleStrategy({
-    clientID: config.googleClientId,
-    clientSecret: config.googleClientSecret,
-    callbackURL: "https://" + config.host + ":" + config.port + "/oauth2callback",
-    failureRedirect: "login"
-  },
-  function(accessToken, refreshToken, profile, done) {
-    // TODO: Improve serialize/deserialize so we don't use naked _json here.
-    if (!inAllowedDomains(profile._json.hd)) {
-      logger.info('user from domain %s denied access to requested resource', profile._json.hd);
-      return done(null, null);
-    }
-    // TODO: Improve serialize/deserialize so we don't use naked _json here.
-    if (!inAllowedEmails(profile._json.email)) {
-      logger.info('%s denied access to requested resource', profile._json.email);
-      return done(null, null);
-    }
-    return done(null, profile);
-  }
-));
-
 // Configure Express
 app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
   app.use(express.cookieParser());
   app.use(express.methodOverride());
+  redisClient = redis.createClient({ host: config.redisHost, port: config.redisPort });
   var sessionConfig = {
     key: 'sid',
     secret: config.sessionSecret,
-    store: new RedisStore({ host: config.redisHost, port: config.redisPort })
+    store: new RedisStore({ client: redisClient })
   };
   var session = express.session(sessionConfig)
   app.use(session);
@@ -195,7 +162,10 @@ function start() {
 // Stop the server(s).
 function stop() {
   server.close(function() {
-    logger.info('stopping https server on %s', config.port);
+    logger.info('https server stopped on %s', config.port);
+  });
+  redisClient.quit(function() {
+    logger.info('redis client disconnected');
   });
   if (config.httpPort) {
     httpServer.close(function() {

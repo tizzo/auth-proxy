@@ -8,6 +8,9 @@ var passport = require('passport');
 var util = require('util');
 require('should');
 
+// We use self-signed certs for testing but unfortunately in
+// some versions of node this global flag seems to be necessary.
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var ports = [];
 var testServers = [];
@@ -88,6 +91,7 @@ describe('Server', function(){
       uri: 'https://127.0.0.1:' + ports[0],
       followRedirect: false,
       strictSSL: false,
+      rejectUnauthorized : false,
       // Empty out the cookie jar to ensure we don't accidentally auth if these tests run twice.
       jar: new request.jar()
     };

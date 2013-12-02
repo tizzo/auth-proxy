@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/tizzo/auth-proxy.png?branch=master)](https://travis-ci.org/tizzo/auth-proxy)
 
-**STATUS - This project is under active development and while it is currently functional it is not yet table or properly documented, I'll keep the README up to date as this project takes shape.**
+**STATUS - This project is under active development and while it is currently functional it is not yet stable or properly documented, I'll keep the README up to date as this project takes shape.**
 
 This module is a little bit of glue wrapping [express](http://expressjs.com/), [passport](http://passportjs.org/), and [HTTP Proxy](https://github.com/nodejitsu/node-http-proxy).  It allows you to setup a simple reverse proxy server to provide authentication for otherwise unsecured services in your infrastructure. It currently ships with authentication using google apps oauth2. You must add apps domains and allowed users to a whitelist before anyone can authenticate, you'll also need to define your proxy routes.
 

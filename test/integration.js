@@ -1,11 +1,11 @@
 var assert = require("assert")
 var app = require('../index.js');
-var portastic = require('portastic');
 var request = require('request');
 var http = require('http');
 var async = require('async');
 var passport = require('passport');
 var util = require('util');
+var MultiPortFinder = require('../lib/test/MultiPortFinder.js');
 require('should');
 
 // We use self-signed certs for testing but unfortunately in
@@ -47,17 +47,12 @@ describe('Server', function(){
       res.writeHead(200);
       res.end();
     });
-    var options = {
-      min: 6000,
-      max: 9000,
-      retrieve: 5
-    };
     var findPorts = function(cb) {
-      portastic.find(options, function(error, foundPorts) {
+      MultiPortFinder(5, function(error, foundPorts) {
         ports = foundPorts;
         app.config.port = ports[0];
         app.config.httpPort = ports[1];
-        cb(error);
+        cb();
       });
     };
     var startTestServer1 = function(cb) {

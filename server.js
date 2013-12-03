@@ -182,7 +182,8 @@ function ensureAuthenticated(req, res, next) {
   }
   // Browsers often send favicon requests after the initial load.
   // We don't want to redirect people to the favicon.
-  // Save the original destination in the session.
+  // If it's not a favicon, save the original destination
+  // in the session.
   if (req.url.match('favicon.ico') == null && req.session) {
     req.session.redirectTo = req.url;
   }

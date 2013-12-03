@@ -3,9 +3,8 @@ var app = require('../index.js');
 var request = require('request');
 var http = require('http');
 var async = require('async');
-var passport = require('passport');
-var util = require('util');
 var MultiPortFinder = require('../lib/test/MultiPortFinder.js');
+var MockAuth = require('../lib/plugins/MockAuth.js');
 require('should');
 
 // We use self-signed certs for testing but unfortunately in
@@ -18,30 +17,8 @@ var testServers = [];
 describe('Server', function(){
   before(function(done) {
     app.logger.transports = [];
-    var MockStrategy = function(options, verify) {
-      this.name = 'mock';
-      this.verify = function(cb) {
-        console.log(arguments);
-        cb();
-      };
-    };
-    util.inherits(MockStrategy, passport.Strategy);
-    MockStrategy.prototype.name = 'mockSession';
-    MockStrategy.prototype.authenticate = function(req) {
-      if (req.headers.authenticated) {
-        var user = {
-          _json: {
-            email: 'homer@simpson.com'
-          }
-        };
-        this.success(user, user);
-      }
-      else {
-        this.fail(new Error('User failed to auth'));
-      }
-    };
     app.passport.unuse('google');
-    app.passport.use(new MockStrategy());
+    app.passport.use(new MockAuth.MockStrategy());
     app.app.get('/mockAuth', passport.authenticate('mock'));
     var findPorts = function(cb) {
       MultiPortFinder(5, function(error, foundPorts) {

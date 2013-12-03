@@ -41,12 +41,8 @@ describe('Server', function(){
       }
     };
     app.passport.unuse('google');
-    var strategy = new MockStrategy();
-    app.passport.use(strategy);
-    app.app.get('/mockAuth', passport.authenticate('mock'), function(req, res, next) {
-      res.writeHead(200);
-      res.end();
-    });
+    app.passport.use(new MockStrategy());
+    app.app.get('/mockAuth', passport.authenticate('mock'));
     var findPorts = function(cb) {
       MultiPortFinder(5, function(error, foundPorts) {
         ports = foundPorts;

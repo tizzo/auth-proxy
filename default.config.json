@@ -15,5 +15,6 @@
   "allowedEmails": [],
   "googleClientId": "CHANGE ME",
   "googleClientSecret": "CHAGNE ME",
-  "routes": {}
+  "routes": {},
+  "verbose": false
 }

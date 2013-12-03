@@ -230,7 +230,9 @@ function rewriteRequest(req, route) {
     var hostRewriteRegex = new RegExp(route.hostPattern)
     req.headers.host = req.headers.host.replace(hostRewriteRegex, route.hostRewritePattern);
   }
-  req.headers['X-Forwarded-User'] = req.user._json.email;
+  if (req.user && req.user._json && req.user._json.email) {
+    req.headers['X-Forwarded-User'] = req.user._json.email;
+  }
   // Allow the auth proxy to supply basic auth for systems that require some form of auth.
   if (route.basicAuth && route.basicAuth.name && route.basicAuth.password) {
     var authString = (new Buffer(route.basicAuth.name + ':' + route.basicAuth.password, "ascii")).toString("base64");
@@ -255,9 +257,9 @@ function rewriteResponse(res, route) {
     // TODO: Due to https://github.com/nodejitsu/node-http-proxy/pull/388 we
     // need to make sure we don't send headers twice.
 
-    if (arguments[1].location) {
+    if (arguments[1] && arguments[1].headers && arguments[1].headers.host) {
       if (route.hostPattern && route.hostRewritePattern) {
-        arguments[1].location = arguments[1].location.replace(route.hostPattern, route.hostRewritePattern);
+        arguments[1].headers.host = arguments[1].headers.host.replace(route.hostPattern, route.hostRewritePattern);
       }
       // Ensure that our location is being written with the ssl protocol.
       arguments[1].location = arguments[1].location.replace(/^http:/, 'https:');
@@ -278,7 +280,7 @@ function proxyRoute(req, res, next) {
     req = rewriteRequest(req, route);
     res = rewriteResponse(res, route);
     var newRequest = route.host + ':' + route.port + req.url;
-    if (req.user._json.email) {
+    if (req.user && req.user._json && req.user._json.email) {
       logger.info('%s at %s has requested %s proxying to %s', req.user._json.email, req.connection.remoteAddress, originalReq, newRequest);
     }
     // Proxy the request and response.

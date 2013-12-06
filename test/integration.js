@@ -19,7 +19,7 @@ describe('Server', function(){
     app.logger.transports = [];
     app.passport.unuse('google');
     app.passport.use(new MockAuth.MockStrategy());
-    app.app.get('/mockAuth', passport.authenticate('mock'));
+    app.app.get('/mockAuth', app.passport.authenticate('mock'));
     var findPorts = function(cb) {
       MultiPortFinder(5, function(error, foundPorts) {
         ports = foundPorts;

@@ -59,6 +59,7 @@ app.configure(function() {
   app.use(session);
   app.use(passport.initialize());
   app.use(passport.session());
+  app.use(lookupRoute);
   app.use(ensureAuthenticated);
   app.use(proxyRoute);
   // Allow this to be toggleable with verbose logging.
@@ -193,11 +194,12 @@ function ensureAuthenticated(req, res, next) {
 }
 
 // Accepts a req, looks up the route.
-function lookupRoute(req) {
+function lookupRoute(req, res, next) {
+  req.authProxyRoute = false;
   // TODO: There may be a better way to do this, but we shouldn't pass
   // anything in the whitelist to the backend.
   if (inURLWhiteList(req.url)) {
-    return;
+    return next();
   }
   var possibleMatches = [];
   var routes = config.routes;
@@ -217,9 +219,11 @@ function lookupRoute(req) {
       }
     }
     if (match) {
-      return route;
+      req.authProxyRoute = route;
+      return next();
     }
   }
+  next();
 }
 
 // Rewrite the request object based on configured patterns.
@@ -275,7 +279,7 @@ function rewriteResponse(res, route) {
 // Middleware to proxy a route.
 function proxyRoute(req, res, next) {
   // Lookup the route based on configuration.
-  var route = lookupRoute(req);
+  var route = req.authProxyRoute;
   if (route) {
     var originalReq = req.headers.host + req.url;
     // Rewrite the request as configured for this route.

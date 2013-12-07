@@ -161,35 +161,35 @@ describe('Server', function(){
     app.config.routes = [
       {
         link: '/bar',
-        name: 'One',
+        name: 'Enabled one',
         description: 'Route one',
         hostPattern: 'someroute.com'
       },
       {
-        name: 'Two',
+        name: 'Enabled two',
         link: '/baz',
         description: 'Route two',
         hostPattern: 'otherroute.com',
       },
       {
-        name: 'Three',
+        name: 'Disabled',
         link: '/baz',
         description: 'Route three',
         hostPattern: 'thirdrroute.com',
         list: false,
       },
       {
-        name: 'Four',
+        name: 'Incomplete',
         hostPattern: 'thirdrroute.com',
       }
     ];
     request(options, function(error, response, body) {
       if (error) return done(error);
-      body.should.include('One');
-      body.should.include('Route one');
-      body.should.include('Two');
-      body.should.not.include('Three');
-      body.should.not.include('Four');
+      body.should.include('Enabled one');
+      body.should.include('Enabled two');
+      body.should.include('Route two');
+      body.should.not.include('Disabled');
+      body.should.not.include('Incomplete');
       done();
     });
   });

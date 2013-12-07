@@ -193,4 +193,40 @@ describe('Server', function(){
       done();
     });
   });
+  it ('should add basic http auth headers', function(done) {
+    var testUser = 'Bart Simpson';
+    var testPassword = 'Eat My Shorts';
+    app.config.routes = [
+      {
+        'host': '127.0.0.1',
+        'port': ports[4],
+        'basicAuth': {
+          'name': testUser,
+          'password': testPassword,
+        }
+      }
+    ];
+    options = {};
+    options.uri = 'https://127.0.0.1:' + ports[0] + '/foo';
+    var server = http.createServer(function(req,res){
+        var header = req.headers['authorization'] || '';
+        var token = header.split(/\s+/).pop() || '';
+        var auth = new Buffer(token, 'base64').toString();
+        var parts = auth.split(/:/);
+        var username = parts[0];
+        var password = parts[1];
+
+      res.writeHead(200,{'Content-Type':'text/plain'});
+      res.end(JSON.stringify({'username': username, 'password': password}));
+    });
+    server.listen(ports[4], function() {
+      request(options, function(error, response, body) {
+        if (error) return done(error);
+        var values = JSON.parse(body);
+        values.username.should.equal(testUser);
+        values.password.should.equal(testPassword);
+        server.close(done);
+      });
+    });
+  });
 });

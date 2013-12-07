@@ -85,7 +85,16 @@ app.get('/login', function(req, res){
 
 // An index of available services and their descriptions.
 app.get('/', function(req, res) {
-  res.render('index', { name: config.name, routes: config.routes });
+  var renderableRoutes = [];
+  for (i in config.routes) {
+    var route = config.routes[i];
+    if (route.name && route.description && route.link) {
+      if (route.list == undefined || (route.list != undefined && route.list == true)) {
+        renderableRoutes.push(route);
+      }
+    }
+  }
+  res.render('index', { name: config.name, routes: renderableRoutes });
 });
 
 // A route to logout the user.
@@ -180,7 +189,7 @@ function inURLWhiteList(url) {
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated() || inURLWhiteList(req.url)) {
+  if (req.isAuthenticated() || inURLWhiteList(req.url) || (req.authProxyRoute && req.authProxyRoute.public)) {
     return next();
   }
   // Browsers often send favicon requests after the initial load.

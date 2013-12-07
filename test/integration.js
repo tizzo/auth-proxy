@@ -71,6 +71,27 @@ describe('Server', function(){
       done(error);
     });
   });
+  it ('should allow proxying to an annonymous user for a public route.', function(done) {
+    app.config.routes = [
+      {
+        host: '127.0.0.1',
+        port: ports[2],
+        public: true,
+      }
+    ];
+    var options = {
+      followRedirect: false,
+      jar: new request.jar(),
+      strictSSL: false,
+      rejectUnauthorized : false,
+    }
+    options.uri = 'https://127.0.0.1:' + ports[0] + '/somewhere';
+    request(options, function(error, response, body) {
+      if (error) return done(error);
+      body.should.equal('Proxied successfully to server 1.');
+      done();
+    });
+  });
   it('should proxy to a route without any patterns to match', function (done) {
     app.config.routes = [
       {
@@ -133,5 +154,43 @@ describe('Server', function(){
         });
       }
     ], done);
+  });
+  it ('should list only listable routes on the main page', function(done) {
+    options = {};
+    options.uri = 'https://127.0.0.1:' + ports[0];
+    app.config.routes = [
+      {
+        link: '/bar',
+        name: 'One',
+        description: 'Route one',
+        hostPattern: 'someroute.com'
+      },
+      {
+        name: 'Two',
+        link: '/baz',
+        description: 'Route two',
+        hostPattern: 'otherroute.com',
+      },
+      {
+        name: 'Three',
+        link: '/baz',
+        description: 'Route three',
+        hostPattern: 'thirdrroute.com',
+        list: false,
+      },
+      {
+        name: 'Four',
+        hostPattern: 'thirdrroute.com',
+      }
+    ];
+    request(options, function(error, response, body) {
+      if (error) return done(error);
+      body.should.include('One');
+      body.should.include('Route one');
+      body.should.include('Two');
+      body.should.not.include('Three');
+      body.should.not.include('Four');
+      done();
+    });
   });
 });

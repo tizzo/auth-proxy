@@ -21,7 +21,7 @@ describe('Server', function(){
     app.passport.use(new MockAuth.MockStrategy());
     app.app.get('/mockAuth', app.passport.authenticate('mock'));
     var findPorts = function(cb) {
-      MultiPortFinder(5, function(error, foundPorts) {
+      MultiPortFinder(7, function(error, foundPorts) {
         ports = foundPorts;
         app.config.port = ports[0];
         app.config.httpPort = ports[1];
@@ -193,7 +193,7 @@ describe('Server', function(){
       done();
     });
   });
-  it ('should add basic http auth headers', function(done) {
+  it ('should add basic http auth headers if they are configured on the route', function(done) {
     var testUser = 'Bart Simpson';
     var testPassword = 'Eat My Shorts';
     app.config.routes = [
@@ -208,7 +208,7 @@ describe('Server', function(){
     ];
     options = {};
     options.uri = 'https://127.0.0.1:' + ports[0] + '/foo';
-    var server = http.createServer(function(req,res){
+    var server = http.createServer(function(req, res){
         var header = req.headers['authorization'] || '';
         var token = header.split(/\s+/).pop() || '';
         var auth = new Buffer(token, 'base64').toString();
@@ -228,5 +228,87 @@ describe('Server', function(){
         server.close(done);
       });
     });
+  });
+  it ('one request should not block another.', function(done) {
+    app.config.routes = [
+      {
+        'host': '127.0.0.1',
+        'port': ports[5],
+        'pathPattern': '^/slow/?',
+        'public': true
+      },
+      {
+        'host': '127.0.0.1',
+        'port': ports[2],
+        'pathPattern': '^/fast/?',
+        'public': true
+      }
+    ];
+    var history = [];
+    var server1 = http.createServer(function(req, res) {
+      unblock = function() {
+        history.push('slow request received');
+        res.writeHead(200);
+        setTimeout(function() {
+          res.end('slow response');
+          history.push('slow response sent');
+        }, 200);
+      };
+      setTimeout(unblock, 500);
+    });
+    var history = [];
+    var responseHandler = function(cb, error, response, body) {
+      if (error) return cb(error);
+      if (body == 'Proxied successfully to server 1.') {
+        history.push('fast response received');
+      }
+      else if (body == 'slow response') {
+        history.push('slow response received');
+      }
+      cb();
+    };
+    var context = {called: 0};
+    var sendRequests = function(cb) {
+      var called = 0;
+      var over = function(error) {
+        called++;
+        if (error || called == 2) {
+          cb(error);
+        }
+      };
+      options.uri = 'https://127.0.0.1:' + ports[0] + '/slow';
+      request(options, responseHandler.bind(context, over));
+      history.push('slow request sent');
+      setTimeout(function() {
+        history.push('fast request sent');
+        options.uri = 'https://127.0.0.1:' + ports[0] + '/fast';
+        request(options, responseHandler.bind(context, over));
+      }, 600);
+    };
+    // TODO: I shouldn't need to wrap these if I use bind() properly...
+    var listennow = function(port, cb) {
+      //console.log('*********** listening'.green);
+      server1.listen(port, cb);
+    };
+    var stoplistening = function(cb) {
+      //console.log('***************** stop listening'.red);
+      server1.close(cb);
+    }
+    var performAssertions = function(cb) {
+      history[0].should.equal('slow request sent');
+      history[1].should.equal('slow request received');
+      history[2].should.equal('fast request sent');
+      history[3].should.equal('fast response received');
+      history[4].should.equal('slow response sent');
+      history[5].should.equal('slow response received');
+      cb();
+    }
+    async.auto({
+      //startServer1: server1.listen.bind(server1, ports[5]),
+      startSlowServer: listennow.bind(null, ports[5]),
+      sendRequests: ['startSlowServer', sendRequests],
+      performAssertions: ['sendRequests', performAssertions],
+      stopServer: ['performAssertions', stoplistening],
+    }, done);
   });
 });

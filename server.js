@@ -224,7 +224,8 @@ function ensureAuthenticated(req, res, next) {
     req.session.redirectTo = req.url;
   }
   var redirectDest = 'https://' + config.host + '/login';
-  logger.info('Redirecting request for %s from IP %s to %s', req.connection.remoteAddress, originalReq, redirectDest);
+  var originalReq = req.headers.host + req.url;
+  logger.info('Redirecting request for %s from IP %s to %s', originalReq, req.connection.remoteAddress, redirectDest);
   res.redirect(redirectDest);
 }
 

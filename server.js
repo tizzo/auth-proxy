@@ -165,12 +165,15 @@ function stop(done) {
     cb();
     redisClient.quit();
   });
+  */
   if (config.httpPort) {
     httpServer.on('close', function() {
     });
     tasks.push(function(cb) {
-      logger.info('stopping http redirect server on %s', config.httpPort);
-      httpServer.on('close', cb);
+      httpServer.on('close', function() {
+        logger.info('stopped http redirect server on %s', config.httpPort);
+        cb();
+      });
       httpServer.close();
     });
   }

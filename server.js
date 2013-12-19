@@ -100,7 +100,7 @@ app.get('/', function(req, res) {
 // A route to logout the user.
 app.get('/proxy-logout', function(req, res){
   req.logout();
-  res.redirect('/');
+  res.redirect('https://' + config.host + '/');
 });
 
 var options = {
@@ -199,7 +199,7 @@ function ensureAuthenticated(req, res, next) {
   if (req.url.match('favicon.ico') == null && req.session) {
     req.session.redirectTo = req.url;
   }
-  res.redirect('/login');
+  res.redirect('https://' + config.host + '/login');
 }
 
 // Accepts a req, looks up the route.

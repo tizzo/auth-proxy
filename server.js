@@ -153,16 +153,17 @@ function stop(done) {
   }
   var tasks = [];
   tasks.push(function(cb) {
-    logger.info('stopping https server on %s', config.port);
-    server.on('close', cb);
-    server.close();
-  });
-  tasks.push(function(cb) {
-    redisClient.quit();
-    redisClient.on('end', function() {
-      logger.info('redis client disconnected');
+    server.on('close', function() {
+      logger.info('stopped https server on %s', config.port);
       cb();
     });
+    server.close();
+  });
+  // TODO: Redis isn't sutting down properly. Why?
+  /*
+  tasks.push(function(cb) {
+    cb();
+    redisClient.quit();
   });
   if (config.httpPort) {
     httpServer.on('close', function() {
@@ -219,7 +220,9 @@ function ensureAuthenticated(req, res, next) {
   if (req.url.match('favicon.ico') == null && req.session) {
     req.session.redirectTo = req.url;
   }
-  res.redirect('https://' + config.host + '/login');
+  var redirectDest = 'https://' + config.host + '/login';
+  logger.info('Redirecting request for %s from IP %s to %s', req.connection.remoteAddress, originalReq, redirectDest);
+  res.redirect(redirectDest);
 }
 
 // Accepts a req, looks up the route.

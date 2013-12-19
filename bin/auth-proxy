@@ -9,10 +9,23 @@ require('../lib/plugins/GoogleOAuth2').attach(proxy.passport, proxy.app, proxy.c
 
 proxy.start();
 
-process.on('SIGINT', function() {
+var shutdownHandler = function() {
   logger.info('Stop signal received, shutting down.');
-  proxy.stop();
-})
+  process.removeListener('SIGINT', shutdownHandler);
+  process.on('SIGINT', function() {
+    logger.error('Forcing shutdown without completing graceful shutdown.');
+    process.exit(1);
+  });
+  proxy.stop(function() {
+    logger.info('Graceful shutdown complete.');
+    process.exit(0);
+  });
+  setTimeout(function() {
+    logger.error('Graceful shutdown timed out.');
+    process.exit(1);
+  }, 500);
+};
+process.on('SIGINT', shutdownHandler);
 
 process.on('SIGHUP', function() {
   logger.error('No handler is setup for SIGHUP at this time');

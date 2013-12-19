@@ -56,6 +56,10 @@ app.configure(function() {
     secret: config.sessionSecret,
     store: new RedisStore({ client: redisClient })
   };
+  if (config.cookieDomain) {
+    console.log('setting cookie domain to ' + config.cookieDomain);
+    sessionConfig.cookie = { domain: config.cookieDomain };
+  }
   var session = express.session(sessionConfig)
   app.use(session);
   app.use(passport.initialize());
@@ -310,6 +314,9 @@ function proxyRoute(req, res, next) {
     var newRequest = route.host + ':' + route.port + req.url;
     if (req.user && req.user._json && req.user._json.email) {
       logger.info('%s at %s has requested %s proxying to %s', req.user._json.email, req.connection.remoteAddress, originalReq, newRequest);
+    }
+    else {
+      logger.info('Annonymous at %s has requested %s proxying to %s', req.connection.remoteAddress, originalReq, newRequest);
     }
     // Proxy the request and response.
     proxy.proxyRequest(req, res, {

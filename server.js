@@ -293,8 +293,10 @@ function rewriteResponse(res, route) {
       if (route.hostPattern && route.hostRewritePattern) {
         arguments[1].headers.host = arguments[1].headers.host.replace(route.hostPattern, route.hostRewritePattern);
       }
-      // Ensure that our location is being written with the ssl protocol.
-      arguments[1].location = arguments[1].location.replace(/^http:/, 'https:');
+      if (arguments[1].location) {
+        // Ensure that our location is being written with the ssl protocol.
+        arguments[1].location = arguments[1].location.replace(/^http:/, 'https:');
+      }
     }
     sent = true;
     _writeHead.apply(this, arguments);

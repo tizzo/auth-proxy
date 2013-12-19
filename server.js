@@ -57,7 +57,6 @@ app.configure(function() {
     store: new RedisStore({ client: redisClient })
   };
   if (config.cookieDomain) {
-    console.log('setting cookie domain to ' + config.cookieDomain);
     sessionConfig.cookie = { domain: config.cookieDomain };
   }
   var session = express.session(sessionConfig)

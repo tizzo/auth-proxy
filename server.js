@@ -77,7 +77,7 @@ app.configure(function() {
 
 // A path to login to the proxy, only accessible if you are not logged in.
 app.get('/login', function(req, res){
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated() && req.session.redirectTo) {
     res.redirect(req.session.redirectTo);
   }
   var options = {

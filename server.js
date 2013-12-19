@@ -157,9 +157,12 @@ function stop(done) {
     server.on('close', cb);
     server.close();
   });
-  tasks.push(redisClient.quit.bind(redisClient));
-  redisClient.on('end', function() {
-    logger.info('redis client disconnected');
+  tasks.push(function(cb) {
+    redisClient.quit();
+    redisClient.on('end', function() {
+      logger.info('redis client disconnected');
+      cb();
+    });
   });
   if (config.httpPort) {
     httpServer.on('close', function() {

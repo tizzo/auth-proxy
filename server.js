@@ -9,7 +9,8 @@ var fs = require('fs')
   , path = require('path')
   , redis = require('redis')
   , RedisStore = require('connect-redis')(express)
-  , winston = require('winston');
+  , winston = require('winston')
+  , async = require('async');
 
 var proxy = new httpProxy.RoutingProxy();
 
@@ -142,18 +143,30 @@ function start(done) {
 }
 
 // Stop the server(s).
-function stop() {
-  server.close(function() {
-    logger.info('https server stopped on %s', config.port);
+function stop(done) {
+  if (!done) {
+    done = function() {};
+  }
+  var tasks = [];
+  tasks.push(function(cb) {
+    logger.info('stopping https server on %s', config.port);
+    server.on('close', cb);
+    server.close();
   });
-  redisClient.quit(function() {
+  tasks.push(redisClient.quit.bind(redisClient));
+  redisClient.on('end', function() {
     logger.info('redis client disconnected');
   });
   if (config.httpPort) {
-    httpServer.close(function() {
+    httpServer.on('close', function() {
+    });
+    tasks.push(function(cb) {
       logger.info('stopping http redirect server on %s', config.httpPort);
+      httpServer.on('close', cb);
+      httpServer.close();
     });
   }
+  async.parallel(tasks, done);
 }
 
 server = https.createServer(options, app);

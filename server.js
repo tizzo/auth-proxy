@@ -75,7 +75,7 @@ app.configure(function() {
 });
 
 // A path to login to the proxy, only accessible if you are not logged in.
-app.get('/login', function(req, res){
+app.get(config.loginPath, function(req, res){
   if (req.isAuthenticated() && req.session.redirectTo) {
     res.redirect(req.session.redirectTo);
   }
@@ -196,7 +196,7 @@ server.on('listening', function() {
 // not require authentication.
 function inURLWhiteList(url) {
   var whiteList = [
-    '/login',
+    config.loginPath,
     '/mockAuth',
     '/auth/google',
     '/oauth2callback',
@@ -215,6 +215,7 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated() || inURLWhiteList(req.url) || (req.authProxyRoute && req.authProxyRoute.public)) {
     return next();
   }
+  console.log([req.isAuthenticated(),  inURLWhiteList(req.url),  req.authProxyRoute, req.authProxyRoute.public]);
   // Browsers often send favicon requests after the initial load.
   // We don't want to redirect people to the favicon.
   // If it's not a favicon, save the original destination
@@ -222,7 +223,7 @@ function ensureAuthenticated(req, res, next) {
   if (req.url.match('favicon.ico') == null && req.session) {
     req.session.redirectTo = req.url;
   }
-  var redirectDest = 'https://' + config.host + '/login';
+  var redirectDest = 'https://' + config.host + config.loginPath;
   var originalReq = req.headers.host + req.url;
   logger.info('Redirecting request for %s from IP %s to %s', originalReq, req.connection.remoteAddress, redirectDest);
   res.redirect(redirectDest);

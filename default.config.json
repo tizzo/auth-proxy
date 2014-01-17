@@ -17,5 +17,6 @@
   "googleClientId": "CHANGE ME",
   "googleClientSecret": "CHAGNE ME",
   "routes": {},
-  "verbose": false
+  "verbose": false,
+  "loginPath": "/login"
 }

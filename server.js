@@ -215,7 +215,6 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated() || inURLWhiteList(req.url) || (req.authProxyRoute && req.authProxyRoute.public)) {
     return next();
   }
-  console.log([req.isAuthenticated(),  inURLWhiteList(req.url),  req.authProxyRoute, req.authProxyRoute.public]);
   // Browsers often send favicon requests after the initial load.
   // We don't want to redirect people to the favicon.
   // If it's not a favicon, save the original destination

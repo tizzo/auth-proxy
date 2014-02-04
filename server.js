@@ -223,7 +223,7 @@ function ensureAuthenticated(req, res, next) {
   if (req.url.match('favicon.ico') == null && req.session) {
     req.session.redirectTo = req.url;
   }
-  var redirectDest = 'https://' + config.host + config.loginPath;
+  var redirectDest = 'https://' + config.host + ':' + config.port + config.loginPath;
   var originalReq = req.headers.host + req.url;
   logger.info('Redirecting request for %s from IP %s to %s', originalReq, req.connection.remoteAddress, redirectDest);
   res.redirect(redirectDest);

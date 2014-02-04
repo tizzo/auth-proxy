@@ -67,7 +67,7 @@ describe('Server', function(){
       if (error) {
         done(error);
       }
-      body.should.equal('Moved Temporarily. Redirecting to https://127.0.0.1/login');
+      body.should.match(/^Moved Temporarily\. Redirecting to https:\/\/127\.0\.0\.1(:\d+)?\/login$/);
       done(error);
     });
   });

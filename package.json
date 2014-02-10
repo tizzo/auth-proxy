@@ -23,7 +23,10 @@
     "assert": "~0.4.9",
     "should": "~2.1.0",
     "async": "~0.2.9",
-    "portfinder": "~0.2.1"
+    "portfinder": "~0.2.1",
+    "mocha-lcov-reporter": "0.0.1",
+    "coveralls": "~2.7.1",
+    "blanket": "~1.1.6"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha",
@@ -31,5 +34,10 @@
     "watch": "./node_modules/mocha/bin/mocha -w"
   },
   "repository": "https://github.com/tizzo/authenticating-proxy.git",
-  "license": "GPL"
+  "license": "GPL",
+  "config": {
+    "blanket": {
+      "pattern": "//lib/(server.js|ConfigLoader.js)/"
+    }
+  }
 }

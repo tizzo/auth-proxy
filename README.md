@@ -1,6 +1,7 @@
 # Authenitcating Proxy
 
 [![Build Status](https://travis-ci.org/tizzo/auth-proxy.png?branch=master)](https://travis-ci.org/tizzo/auth-proxy)
+[![Coverage Status](https://coveralls.io/repos/tizzo/auth-proxy/badge.png)](https://coveralls.io/r/tizzo/auth-proxy)
 
 **STATUS - This project is under active development and while it is currently functional it is not yet stable or properly documented, I'll keep the README up to date as this project takes shape.**
 

@@ -1,3 +1,3 @@
 module.exports = {};
-module.exports = require('./server');
+module.exports = require('./lib/server');
 module.exports.Route = require('./lib/Route');

@@ -344,6 +344,7 @@ function proxyRoute(req, res, next) {
 
 module.exports = {};
 module.exports.app = app;
+module.exports.redisClient = redisClient;
 module.exports.passport = passport;
 module.exports.config = config;
 module.exports.server = server;

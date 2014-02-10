@@ -16,6 +16,10 @@ var testServers = [];
 
 describe('Server', function(){
   before(function(done) {
+    if (app.redisClient.connected == false) {
+      throw new Error('Tests require a redis instance.');
+      process.exit(1);
+    }
     app.logger.transports = [];
     app.passport.unuse('google');
     app.passport.use(new MockAuth.MockStrategy());

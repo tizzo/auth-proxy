@@ -75,6 +75,23 @@ describe('Server', function(){
       done(error);
     });
   });
+  it('should server css assets if not authenticated', function(done) {
+    var options = {
+      uri: 'https://127.0.0.1:' + ports[0] + '/css/bootstrap.css',
+      followRedirect: false,
+      strictSSL: false,
+      rejectUnauthorized : false,
+      // Empty out the cookie jar to ensure we don't accidentally auth if these tests run twice.
+      jar: new request.jar()
+    };
+    request(options, function(error, response, body) {
+      if (error) {
+        done(error);
+      }
+      response.statusCode.should.equal(200);
+      done(error);
+    });
+  });
   it ('should allow proxying to an annonymous user for a public route.', function(done) {
     app.config.routes = [
       {

@@ -14,7 +14,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 var ports = [];
 var testServers = [];
 
-describe('Server', function(){
+describe('Integration', function(){
   before(function(done) {
     if (app.redisClient.connected == false) {
       throw new Error('Tests require a redis instance.');
@@ -111,11 +111,11 @@ describe('Server', function(){
   });
   it ('should allow proxying to an annonymous user for a public route.', function(done) {
     app.config.routes = [
-      {
+      new app.Route({
         host: '127.0.0.1',
         port: ports[2],
         public: true,
-      }
+      })
     ];
     var options = {
       followRedirect: false,
@@ -132,10 +132,10 @@ describe('Server', function(){
   });
   it('should proxy to a route without any patterns to match', function (done) {
     app.config.routes = [
-      {
+      new app.Route({
         host: '127.0.0.1',
         port: ports[2]
-      }
+      })
     ];
     var options = {
       followRedirect: false,
@@ -156,18 +156,18 @@ describe('Server', function(){
       });
     });
   });
-  it ('should proxy to a route based on hostname pattern', function (done) {
+  it('should proxy to a route based on hostname pattern', function (done) {
     app.config.routes = [
-      {
+      new app.Route({
         host: '127.0.0.1',
         port: ports[2],
         hostPattern: 'someroute.com',
-      },
-      {
+      }),
+      new app.Route({
         host: '127.0.0.1',
         port: ports[3],
         hostPattern: 'otherroute.com',
-      }
+      })
     ];
     var options = {
       followRedirect: false,
@@ -197,29 +197,29 @@ describe('Server', function(){
     options = {};
     options.uri = 'https://127.0.0.1:' + ports[0];
     app.config.routes = [
-      {
+      new app.Route({
         link: '/bar',
         name: 'Enabled one',
         description: 'Route one',
         hostPattern: 'someroute.com'
-      },
-      {
+      }),
+      new app.Route({
         name: 'Enabled two',
         link: '/baz',
         description: 'Route two',
         hostPattern: 'otherroute.com',
-      },
-      {
+      }),
+      new app.Route({
         name: 'Disabled',
         link: '/baz',
         description: 'Route three',
         hostPattern: 'thirdrroute.com',
         list: false,
-      },
-      {
+      }),
+      new app.Route({
         name: 'Incomplete',
         hostPattern: 'thirdrroute.com',
-      }
+      })
     ];
     request(options, function(error, response, body) {
       if (error) return done(error);
@@ -235,14 +235,14 @@ describe('Server', function(){
     var testUser = 'Bart Simpson';
     var testPassword = 'Eat My Shorts';
     app.config.routes = [
-      {
+      new app.Route({
         'host': '127.0.0.1',
         'port': ports[4],
         'basicAuth': {
           'name': testUser,
           'password': testPassword,
         }
-      }
+      })
     ];
     options = {};
     options.uri = 'https://127.0.0.1:' + ports[0] + '/foo';

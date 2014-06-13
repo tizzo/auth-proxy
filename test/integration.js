@@ -177,8 +177,13 @@ describe('Integration', function(){
       }
     };
     options.uri = 'https://127.0.0.1:' + ports[0];
-    async.waterfall([
+    async.series([
+      function (cb) {
+        options.uri = options.uri + '/mockAuth';
+        request(options, cb);
+      },
       function(cb) {
+        options.uri = 'https://127.0.0.1:' + ports[0];
         request(options, function(error, response, body) {
           body.should.equal('Proxied successfully to server 1.');
           cb(error);
@@ -267,86 +272,117 @@ describe('Integration', function(){
       });
     });
   });
-  it ('one request should not block another.', function(done) {
+  it('should proxy to the appropriate backend based on path pattern.', function(done) {
     app.config.routes = [
-      {
+      new app.Route({
+        host: '127.0.0.1',
+        port: ports[2],
+        pathPattern: "^/one/?",
+        public: true,
+      }),
+      new app.Route({
+        host: '127.0.0.1',
+        port: ports[3],
+        pathPattern: "^/two/?",
+        public: true,
+      })
+    ];
+    var options = {
+      followRedirect: false,
+      jar: new request.jar(),
+      strictSSL: false,
+      rejectUnauthorized : false,
+    }
+    options.uri = 'https://127.0.0.1:' + ports[0] + '/one';
+    request(options, function(error, response, body) {
+      if (error) return done(error);
+      body.should.equal('Proxied successfully to server 1.');
+      options.uri = 'https://127.0.0.1:' + ports[0] + '/two';
+      request(options, function(error, response, body) {
+        body.should.equal('Proxied successfully to server 2.');
+        done(error);
+      });
+    });
+  });
+  it('should not have one request block another request.', function(done) {
+    var slowServer = null;
+    // Configure our two routes, one fast one slow.
+    app.config.routes = [
+      new app.Route({
         'host': '127.0.0.1',
         'port': ports[5],
         'pathPattern': '^/slow/?',
         'public': true
-      },
-      {
+      }),
+      new app.Route({
         'host': '127.0.0.1',
         'port': ports[2],
         'pathPattern': '^/fast/?',
         'public': true
-      }
+      })
     ];
+    // Our history array used to track the order in which events occur.
     var history = [];
-    var server1 = http.createServer(function(req, res) {
-      unblock = function() {
+    // Our slow server which waits 300ms before responding and logs when the
+    // request is received in our history array.
+    var startSlowServer = function(cb) {
+      slowServer = http.createServer(function(req, res) {
         history.push('slow request received');
-        res.writeHead(200);
         setTimeout(function() {
+          res.writeHead(200);
           res.end('slow response');
-          history.push('slow response sent');
-        }, 200);
-      };
-      setTimeout(unblock, 500);
-    });
-    var history = [];
-    var responseHandler = function(cb, error, response, body) {
-      if (error) return cb(error);
-      if (body == 'Proxied successfully to server 1.') {
-        history.push('fast response received');
-      }
-      else if (body == 'slow response') {
-        history.push('slow response received');
-      }
-      cb();
+        }, 300);
+      });
+      testServers.push(slowServer);
+      slowServer.listen(ports[5], cb);
     };
-    var context = {called: 0};
     var sendRequests = function(cb) {
-      var called = 0;
-      var over = function(error) {
-        called++;
-        if (error || called == 2) {
-          cb(error);
-        }
+      var options = {
+        followRedirect: false,
+        strictSSL: false,
+        rejectUnauthorized : false,
+        // Empty out the cookie jar to ensure we don't accidentally auth if
+        // these tests run twice.
+        jar: new request.jar()
       };
-      options.uri = 'https://127.0.0.1:' + ports[0] + '/slow';
-      request(options, responseHandler.bind(context, over));
       history.push('slow request sent');
-      setTimeout(function() {
-        history.push('fast request sent');
-        options.uri = 'https://127.0.0.1:' + ports[0] + '/fast';
-        request(options, responseHandler.bind(context, over));
-      }, 600);
+      options.uri = 'https://127.0.0.1:' + ports[0] + '/slow';
+      // Run a slow request and a fast request in parallel.
+      async.parallel([
+        function(localCb) {
+          request(options, function(error, response, body) {
+            if (body === 'slow response') {
+              history.push('slow response received');
+            }
+            localCb(error);
+          });
+        },
+        function(localCb) {
+          options.uri = 'https://127.0.0.1:' + ports[0] + '/fast';
+          history.push('fast request sent');
+          request(options, function(error, response, body) {
+            if (body === 'Proxied successfully to server 1.') {
+              history.push('fast response received');
+            }
+            localCb();
+          });
+        },
+      ], cb)
     };
-    // TODO: I shouldn't need to wrap these if I use bind() properly...
-    var listennow = function(port, cb) {
-      //console.log('*********** listening'.green);
-      server1.listen(port, cb);
-    };
-    var stoplistening = function(cb) {
-      //console.log('***************** stop listening'.red);
-      server1.close(cb);
-    }
     var performAssertions = function(cb) {
       history[0].should.equal('slow request sent');
-      history[1].should.equal('slow request received');
-      history[2].should.equal('fast request sent');
+      history[1].should.equal('fast request sent');
+      history[2].should.equal('slow request received');
       history[3].should.equal('fast response received');
-      history[4].should.equal('slow response sent');
-      history[5].should.equal('slow response received');
+      history[4].should.equal('slow response received');
       cb();
     }
-    async.auto({
-      //startServer1: server1.listen.bind(server1, ports[5]),
-      startSlowServer: listennow.bind(null, ports[5]),
-      sendRequests: ['startSlowServer', sendRequests],
-      performAssertions: ['sendRequests', performAssertions],
-      stopServer: ['performAssertions', stoplistening],
-    }, done);
+    async.series([
+      startSlowServer,
+      sendRequests,
+      performAssertions
+    ], function() {
+      done();
+    });
   });
 });

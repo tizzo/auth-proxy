@@ -6,7 +6,7 @@ var ConfigLoader = app.ConfigLoader;
 
 describe('ConfigLoader', function() {
   describe('loadDir', function() {
-    it ('should combine config objects', function(done) {
+    it('should combine config objects', function(done) {
       var configDir = path.resolve(path.join('.', 'test', 'fixtures', 'ConfigLoader', 'json-objects'));
       ConfigLoader.logErrors = false;
       ConfigLoader.loadDir(configDir, function(error, conf) {

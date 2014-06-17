@@ -28,7 +28,8 @@
     "portfinder": "~0.2.1",
     "mocha-lcov-reporter": "0.0.1",
     "coveralls": "~2.7.1",
-    "blanket": "~1.1.6"
+    "blanket": "~1.1.6",
+    "js-yaml": "~3.0.2"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha",

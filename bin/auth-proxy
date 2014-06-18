@@ -7,7 +7,14 @@ var logger = proxy.logger;
 // TODO: Setup a better way to configure this.
 require('../lib/plugins/GoogleOAuth2').attach(proxy.passport, proxy.app, proxy.config);
 
-proxy.start();
+
+// If a confg file exists, override the defaults with values
+// from that file.
+var confPath = path.join(__dirname, '..', 'config.json');
+
+proxy.configure(confPath, function() {
+  proxy.start();
+});
 
 var shutdownHandler = function() {
   logger.info('Stop signal received, shutting down.');

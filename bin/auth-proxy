@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+var path = require('path');
+
 // Include the main application.
 var proxy = require('../lib/server.js');
 var logger = proxy.logger;
@@ -12,9 +14,7 @@ require('../lib/plugins/GoogleOAuth2').attach(proxy.passport, proxy.app, proxy.c
 // from that file.
 var confPath = path.join(__dirname, '..', 'config.json');
 
-proxy.configure(confPath, function() {
-  proxy.start();
-});
+proxy.start(confPath);
 
 var shutdownHandler = function() {
   logger.info('Stop signal received, shutting down.');

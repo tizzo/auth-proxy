@@ -114,14 +114,14 @@ describe('Integration', function(){
       done(error);
     });
   });
-  it ('should allow proxying to an annonymous user for a public route.', function(done) {
-    app.config.routes = [
+  it('should allow proxying to an annonymous user for a public route.', function(done) {
+    app.setRoutes([
       new app.Route({
         host: '127.0.0.1',
         port: ports[2],
         public: true,
       })
-    ];
+    ]);
     var options = {
       followRedirect: false,
       jar: new request.jar(),
@@ -136,12 +136,12 @@ describe('Integration', function(){
     });
   });
   it('should proxy to a route without any patterns to match', function (done) {
-    app.config.routes = [
+    app.setRoutes([
       new app.Route({
         host: '127.0.0.1',
         port: ports[2]
       })
-    ];
+    ]);
     var options = {
       followRedirect: false,
       headers: {
@@ -162,7 +162,7 @@ describe('Integration', function(){
     });
   });
   it('should proxy to a route based on hostname pattern', function (done) {
-    app.config.routes = [
+    app.setRoutes([
       new app.Route({
         host: '127.0.0.1',
         port: ports[2],
@@ -173,7 +173,7 @@ describe('Integration', function(){
         port: ports[3],
         hostPattern: 'otherroute.com',
       })
-    ];
+    ]);
     var options = {
       followRedirect: false,
       headers: {
@@ -206,7 +206,7 @@ describe('Integration', function(){
   it ('should list only listable routes on the main page', function(done) {
     options = {};
     options.uri = 'https://127.0.0.1:' + ports[0];
-    app.config.routes = [
+    app.setRoutes([
       new app.Route({
         link: '/bar',
         name: 'Enabled one',
@@ -230,7 +230,7 @@ describe('Integration', function(){
         name: 'Incomplete',
         hostPattern: 'thirdrroute.com',
       })
-    ];
+    ]);
     request(options, function(error, response, body) {
       if (error) return done(error);
       body.should.include('Enabled one');
@@ -244,7 +244,7 @@ describe('Integration', function(){
   it ('should add basic http auth headers if they are configured on the route', function(done) {
     var testUser = 'Bart Simpson';
     var testPassword = 'Eat My Shorts';
-    app.config.routes = [
+    app.setRoutes([
       new app.Route({
         'host': '127.0.0.1',
         'port': ports[4],
@@ -253,7 +253,7 @@ describe('Integration', function(){
           'password': testPassword,
         }
       })
-    ];
+    ]);
     options = {};
     options.uri = 'https://127.0.0.1:' + ports[0] + '/foo';
     var server = http.createServer(function(req, res){
@@ -278,7 +278,7 @@ describe('Integration', function(){
     });
   });
   it('should proxy to the appropriate backend based on path pattern.', function(done) {
-    app.config.routes = [
+    app.setRoutes([
       new app.Route({
         host: '127.0.0.1',
         port: ports[2],
@@ -291,7 +291,7 @@ describe('Integration', function(){
         pathPattern: "^/two/?",
         public: true,
       })
-    ];
+    ]);
     var options = {
       followRedirect: false,
       jar: new request.jar(),
@@ -312,7 +312,7 @@ describe('Integration', function(){
   it('should not have one request block another request.', function(done) {
     var slowServer = null;
     // Configure our two routes, one fast one slow.
-    app.config.routes = [
+    app.setRoutes([
       new app.Route({
         'host': '127.0.0.1',
         'port': ports[5],
@@ -325,7 +325,7 @@ describe('Integration', function(){
         'pathPattern': '^/fast/?',
         'public': true
       })
-    ];
+    ]);
     // Our history array used to track the order in which events occur.
     var history = [];
     // Our slow server which waits 300ms before responding and logs when the

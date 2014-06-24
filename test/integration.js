@@ -17,8 +17,13 @@ var testServers = [];
 describe('Integration', function(){
   before(function(done) {
     if (app.redisClient.connected == false) {
-      throw new Error('Tests require a redis instance.');
-      process.exit(1);
+      // Sometimes it takes a second to connect to redis...
+      setTimeout(function() {
+        if (app.redisClient.connected == false) {
+          throw new Error('Tests require a redis instance.');
+          process.exit(1);
+        }
+      }, 250);
     }
     app.logger.transports = [];
     app.passport.unuse('google');

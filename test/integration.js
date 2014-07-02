@@ -32,8 +32,8 @@ describe('Integration', function(){
     var findPorts = function(cb) {
       MultiPortFinder(7, function(error, foundPorts) {
         ports = foundPorts;
-        app.config.port = ports[0];
-        app.config.httpPort = ports[1];
+        app.configSet('port', ports[0]);
+        app.configSet('httpPort', ports[1]);
         cb();
       });
     };
@@ -55,7 +55,7 @@ describe('Integration', function(){
         cb(error);
       });
     };
-    async.waterfall([findPorts, startTestServer1, startTestServer2, app.start], done);
+    async.waterfall([app.configure.bind(app, null), findPorts, startTestServer1, startTestServer2, app.start], done);
   });
   after(function() {
     app.stop();

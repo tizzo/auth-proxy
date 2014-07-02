@@ -7,8 +7,14 @@ var ConfigLoader = app.ConfigLoader;
 var configDir = path.resolve(path.join('.', 'test', 'fixtures', 'ConfigLoader', 'json-objects'));
 
 describe('ConfigLoader', function() {
-  describe('loadDirAsArray', function() {
-    it('should load an array of config objects', function(done) {
+  describe('load', function() {
+    it('should load configuration from a single file and merge it with the default', function(done) {
+      done();
+    });
+  });
+  describe('loadDir', function() {
+    it('should combine config objects', function(done) {
+      var configDir = path.resolve(path.join('.', 'test', 'fixtures', 'ConfigLoader', 'json-objects'));
       ConfigLoader.logErrors = false;
       ConfigLoader.loadDirAsArray(configDir, function(error, conf) {
         should.exist(conf);

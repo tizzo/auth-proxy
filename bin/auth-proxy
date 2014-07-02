@@ -14,7 +14,9 @@ require('../lib/plugins/GoogleOAuth2').attach(proxy.passport, proxy.app, proxy.c
 // from that file.
 var confPath = path.join(__dirname, '..', 'config.json');
 
-proxy.start(confPath);
+proxy.configure(confPath, function() {
+  proxy.start(confPath);
+});
 
 var shutdownHandler = function() {
   logger.info('Stop signal received, shutting down.');

@@ -16,15 +16,17 @@ var testServers = [];
 
 describe('Integration', function(){
   before(function(done) {
-    if (app.redisClient.connected == false) {
+    var checkRedisConnection = function(cb) {
+      if (app.redisClient.connected === true) {
+        return cb();
+      }
       // Sometimes it takes a second to connect to redis...
       setTimeout(function() {
-        if (app.redisClient.connected == false) {
-          throw new Error('Tests require a redis instance.');
-          process.exit(1);
+        if (app.redisClient.connected === false) {
+          done(new Error('Tests require a redis instance.'));
         }
       }, 250);
-    }
+    };
     app.logger.transports = [];
     app.passport.unuse('google');
     app.passport.use(new MockAuth.MockStrategy());
@@ -55,10 +57,11 @@ describe('Integration', function(){
         cb(error);
       });
     };
-    async.waterfall([app.configure.bind(app, null), findPorts, startTestServer1, startTestServer2, app.start], done);
+    async.waterfall([checkRedisConnection, app.configure.bind(app, null), findPorts, startTestServer1, startTestServer2, app.start], done);
   });
   after(function() {
     app.stop();
+    var i = null;
     for (i in testServers) {
       testServers[i].close();
     }

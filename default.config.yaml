@@ -1,22 +1,20 @@
-{
-  "name": "Authenticating Proxy",
-  "processName": "auth-proxy",
-  "host": "127.0.0.1",
-  "cookieDomain": false,
-  "port": 3009,
-  "httpPort": 3010,
-  "sslCert": "test/ssl/cert.pem",
-  "sslKey": "test/ssl/key.pem",
-  "redisHost": "127.0.0.1",
-  "redisPort": 6379,
-  "sessionSecret": "secret",
-  "imageURL": "http://nodejs.org/images/logos/nodejs.png",
-  "imageAlt": "Node.js logo",
-  "allowedDomains": [],
-  "allowedEmails": [],
-  "googleClientId": "CHANGE ME",
-  "googleClientSecret": "CHAGNE ME",
-  "routes": {},
-  "verbose": false,
-  "loginPath": "/login"
-}
+name: Authenticating Proxy
+processName: auth-proxy
+host: 127.0.0.1
+cookieDomain: false
+port: 3009
+httpPort: 3010
+sslCert: test/ssl/cert.pem
+sslKey: test/ssl/key.pem
+redisHost: 127.0.0.1
+redisPort: 6379
+sessionSecret: secret
+imageURL: 'http://nodejs.org/images/logos/nodejs.png'
+imageAlt: Node.js logo
+allowedDomains: []
+allowedEmails: []
+googleClientId: CHANGE ME
+googleClientSecret: CHAGNE ME
+routes: {}
+verbose: false
+loginPath: /login

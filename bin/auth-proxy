@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var path = require('path');
+var fs = require('fs');
 
 // Include the main application.
 var proxy = require('../lib/server.js');
@@ -10,12 +11,20 @@ var logger = proxy.logger;
 require('../lib/plugins/GoogleOAuth2').attach(proxy.passport, proxy.app, proxy.config);
 
 
-// If a confg file exists, override the defaults with values
+// If a config file exists, override the defaults with values
 // from that file.
-var confPath = path.join(__dirname, '..', 'config.json');
+var confPath = path.join(__dirname, '..', 'config.yaml');
 
-proxy.configure(confPath, function() {
-  proxy.start(confPath);
+fs.exists(confPath, function(exists) {
+  if (!exists) {
+    confPath = undefined;
+  }
+
+  proxy.configure(confPath, function() {
+    proxy.start(confPath, function() {
+      console.log('STARTED', proxy.config);
+    });
+  });
 });
 
 var shutdownHandler = function() {

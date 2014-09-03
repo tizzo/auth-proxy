@@ -70,3 +70,37 @@ routes:
     port: 8989
 ```
 
+## Authentication Strategy Plugins
+
+Auth-proxy uses a plugin system for authentication strategies which are pluggable.  It ships with a couple of strategies but if a strategy is specified
+in configuration that is not found when requiring `lib/plugins/index.js` than a global require will be attempted.
+
+### Built in strategies
+
+  1. Google OAuth 2
+  2. Mock Strategy
+
+### Writing a Passport Authentication Strategy Plugin 
+
+An auth-proxy strategy plugin is a simple wrapper around the passport strategy responsible for receiving it's configuration,
+instantiating the underlying passport plugin, registering any necessary express routes, and rendering whatever widget needs to
+appear on the login page.
+
+#### Required methods:
+
+##### 1. attach()
+
+``` javasctipt
+attach = function(passport, app, config, logger) {}
+```
+
+**Parameters:**
+
+  - `passport`: The instantiated and configured passport object.
+  - `app`: The express app object, use this to register new routes needed for authentication.
+  - `config`: The configuration for this specific plugin.
+  - `logger`: The instantiated and configured [winston](https://www.npmjs.org/package/winston) logger object.
+
+##### 2. renderLogin()
+
+Render login is responsible for rendering the necessary logn widget for the login page. It receives no parameters and if the module needs to use configurationfor this portion it should be retained from the `attach()` call which will always run first.

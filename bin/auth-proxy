@@ -18,8 +18,7 @@ fs.exists(confPath, function(exists) {
   }
 
   proxy.configure(confPath, function() {
-    proxy.start(confPath, function() {
-      console.log('STARTED', proxy.config);
+    proxy.start(function() {
     });
   });
 });

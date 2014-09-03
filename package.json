@@ -15,7 +15,6 @@
     "passport": ">= 0.0.0",
     "passport-local": ">= 0.0.0",
     "http-proxy": "~1.1.4",
-    "passport-google": "0.2.0",
     "request": "~2.12.0",
     "passport-google-oauth": "~0.1.5",
     "connect-redis": "~1.4.5",

@@ -5,6 +5,7 @@ var http = require('http');
 var async = require('async');
 var MultiPortFinder = require('../lib/test/MultiPortFinder.js');
 var MockAuth = require('../lib/plugins/MockAuth.js');
+var path = require('path');
 require('should');
 
 // We use self-signed certs for testing but unfortunately in
@@ -28,9 +29,6 @@ describe('Integration', function(){
       }, 250);
     };
     app.logger.transports = [];
-    app.passport.unuse('google');
-    app.passport.use(new MockAuth.MockStrategy());
-    app.app.get('/mockAuth', app.passport.authenticate('mock'));
     var findPorts = function(cb) {
       MultiPortFinder(7, function(error, foundPorts) {
         ports = foundPorts;
@@ -57,7 +55,15 @@ describe('Integration', function(){
         cb(error);
       });
     };
-    async.waterfall([checkRedisConnection, app.configure.bind(app, null), findPorts, startTestServer1, startTestServer2, app.start], done);
+    var tasks = [
+      checkRedisConnection,
+        app.configure.bind(app, path.join(__dirname, 'config.yaml')),
+        findPorts,
+        startTestServer1,
+        startTestServer2,
+        app.start,
+    ];
+    async.waterfall(tasks, done);
   });
   after(function() {
     app.stop();

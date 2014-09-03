@@ -13,14 +13,14 @@ Patches adding support for other authentication strategies are most welcome.
 
 1. Clone the repo
 2. `cd` into the directory and run `npm install`
-3. Create a config.json in the root of the repository, any configuration added to this json file will override the defaults (set in `default.config.json`)
-4. Setup your domain and email white lists and add your google apps credentials to the config.json file.
-5. Setup your routes in config.json (see the documentation and examples below).
+3. Create a config.yaml in the root of the repository, any configuration added to this yaml file will override the defaults (set in `default.config.yaml`)
+4. Setup your domain and email white lists and add your google apps credentials to the config.yaml file.
+5. Setup your routes in config.yaml (see the documentation and examples below).
 6. Start the server with `npm start`
 
 ### Configuring
 
-The `default.config.json` file holds the default configuration used by the proxy. If a `config.json` file is created in the root of the repository then any keys set will override defaults set in the default configuration file. Environment variables will override anything set in the configuration files. Environment variables can be set for any configuration key but are converted (all capital letters with underscores rather than camel case.
+The `default.config.yaml` file holds the default configuration used by the proxy. If a `config.yaml` file is created in the root of the repository then any keys set will override defaults set in the default configuration file. Environment variables will override anything set in the configuration files. Environment variables can be set for any configuration key but are converted (all capital letters with underscores rather than camel case.
 
 ### Defining Routes
 
@@ -44,34 +44,28 @@ The routes configuration key is an array of route objects. This list of routes i
 
 #### Configuration example
 
-```javascript
-"routes": [
-  {
-    "name": "Unfoggle",
-
-    "description": "Tracking time ahs never been so easy!",
-    "host": "localhost",
-    "port": 3000,
-    "pathPattern": "^/unfoggle/?"
-  },
-  {
-    "name": "Taskaholic",
-    "description": "A brutal task master",
-    "pathRewritePattern": "/",
-    "host": "localhost",
-    "port": 9001,
-    "pathPattern": "^/taskaholic/?"
-  },
-  {
-    "name": "test route",
-    "pathPattern": "^/test/?",
-    "description": "debug info",
-    "pathRewritePattern": "/",
-    "host": "localhost",
-    "hostPattern": "127.0.0.1",
-    "hostRewritePattern": "fooozbazzzz",
-    "port": 8989
-  }
-]
+```yaml
+routes:
+  - name: "Jenkins"
+    description: "An extendable open source continuous integration server."
+    host: localhost
+    port: 8080
+    pathPattern: "^/jenkins/?"
+    link: /jenkins
+  - name: "Jenkins Git Calback"
+    description: A brutal task master
+    pathRewritePattern: /
+    host: localhost
+    port: 8080
+    pathPattern: "^/jenkins/?"
+  - name: test route
+    pathPattern: "/test/?"
+    description: debug info
+    pathRewritePattern: "/"
+    host: localhost
+    hostPattern: 127.0.0.1
+    link: test
+    hostRewritePattern: fooozbazzzz
+    port: 8989
 ```
 

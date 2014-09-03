@@ -1,0 +1,8 @@
+authenticationStrategies:
+  GoogleOAuth2:
+    # Note this option does not work with gmail addresses.
+    domainCheckingEnabled: false
+    allowedDomains: []
+    allowedEmails: []
+    googleClientId: CHANGE ME
+    googleClientSecret: CHAGNE ME

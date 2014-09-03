@@ -11,10 +11,6 @@ redisPort: 6379
 sessionSecret: secret
 imageURL: 'http://nodejs.org/images/logos/nodejs.png'
 imageAlt: Node.js logo
-allowedDomains: []
-allowedEmails: []
-googleClientId: CHANGE ME
-googleClientSecret: CHAGNE ME
-routes: {}
+authenticationStrategies: {}
 verbose: false
 loginPath: /login

@@ -1,8 +1,10 @@
 authenticationStrategies:
   GoogleOAuth2:
-    # Note this option does not work with gmail addresses.
-    domainCheckingEnabled: false
-    allowedDomains: []
-    allowedEmails: []
+    # Note this option does not work with `@gmail.com` addresses, you would need to leave it empty.
+    allowedDomains:
+      - "howardtyson.com"
+    # Note if you leave this empty and populate only the domain everyone in your apps domain will have access.
+    allowedEmails:
+      - "howard@howardtyson.com"
     googleClientId: CHANGE ME
     googleClientSecret: CHAGNE ME

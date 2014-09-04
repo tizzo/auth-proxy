@@ -3,6 +3,7 @@ processName: auth-proxy
 host: 127.0.0.1
 cookieDomain: false
 port: 3009
+# Set this to `false` to not listen on HTTP.
 httpPort: 3010
 sslCert: test/ssl/cert.pem
 sslKey: test/ssl/key.pem

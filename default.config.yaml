@@ -14,3 +14,5 @@ imageAlt: Node.js logo
 authenticationStrategies: {}
 verbose: false
 loginPath: /login
+logoutPath: /proxy-logout
+indexPath: /

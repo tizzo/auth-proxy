@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Smithers</title>
+    <title><%= name %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Login to our proxy">
     <meta name="author" content="Zivtech, LLC">
@@ -21,13 +21,29 @@
 
   <body>
 
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          </a>
+          <a class="brand" href="#"><%= name %></a>
+          <a class="brand" href="/proxy-logout">Logout</a>
+        </div>
+      </div>
+    </div>
+
     <div class="container">
       <div class="grid">
         <div class="row-fluid">
-          <div class="smithers span4">
-            <img src="/Waylon_Smithers.png">
-          </div> <!-- /smithers -->
-        </div> <!-- /row -->
+          <div class="message span8">
+            <h1>Bad Route</h1>
+            <p>The request could not be completed. This route may be misconfigured or the backend service may be down.</p>
+            <p>Error encountered: <code><%= error.message %></code></p>
+          </div><!-- /message -->
+          <div class="image span4">
+            <img src="<%= imageURL %>" alt="<%= imageAlt %>">
+          </div> <!-- /image -->
+        </div> <!-- /row-fluid -->
       </div> <!-- /grid -->
     </div> <!-- /container -->
 

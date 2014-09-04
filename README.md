@@ -91,14 +91,15 @@ appear on the login page.
 ##### 1. attach()
 
 ``` javasctipt
-attach = function(passport, app, config, logger) {}
+attach = function(passport, app, config, pluginConfig, logger) {}
 ```
 
 **Parameters:**
 
   - `passport`: The instantiated and configured passport object.
   - `app`: The express app object, use this to register new routes needed for authentication.
-  - `config`: The configuration for this specific plugin.
+  - `config`: The current configuration for the server as a whole.
+  - `pluginConfig`: The configuration for this specific plugin.
   - `logger`: The instantiated and configured [winston](https://www.npmjs.org/package/winston) logger object.
 
 ##### 2. renderLogin()

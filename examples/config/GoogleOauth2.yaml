@@ -8,3 +8,4 @@ authenticationStrategies:
       - "howard@howardtyson.com"
     googleClientId: CHANGE ME
     googleClientSecret: CHAGNE ME
+   

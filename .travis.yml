@@ -7,7 +7,7 @@ node_js:
   # Currently these versions are disabled because blanket does not support them
   #- "0.8"
   #- "0.6"
-script:
-  - ./node_modules/.bin/mocha --require blanket --reporter mocha-lcov-reporter > coverage.out
-after_script:
-  - ./node_modules/.bin/coveralls < coverage.out
+#script:
+#  - ./node_modules/.bin/mocha --require blanket --reporter mocha-lcov-reporter > coverage.out
+#after_script:
+#  - ./node_modules/.bin/coveralls < coverage.out

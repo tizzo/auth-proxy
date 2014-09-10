@@ -1,9 +1,0 @@
-authenticationStrategies:
-  DrupalOAuth:
-  	providerURL: "http://extranet.local/"
-  	consumerKey: "ZZzTermjESJBxozP59MbjYTKiMhoJdt7"
-  	consumerSecret: "j8c2gSz9wi7XjEQ52X3YEvyvrEXXgSfP"
-  	requestTokenURL: "http://extranet.local/oauth/request_token"
-  	accessTokenURL: "http://extranet.local/oauth/access_token"
-  	userAuthorizationURL: "http://extranet.local/oauth/authorize"
-  	resourceURL: "http://extranet.local/rest/system/connect/user/info"

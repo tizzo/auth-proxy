@@ -1,4 +1,5 @@
-config.yaml
+./config.yaml
 node_modules
 *.sw*
 *.rdb
+coverage

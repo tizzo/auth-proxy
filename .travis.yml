@@ -8,6 +8,6 @@ node_js:
   #- "0.8"
   #- "0.6"
 script:
-  - ./node_modules/.bin/mocha --require blanket --reporter mocha-lcov-reporter > coverage.out
+  - npm run coverage
 after_script:
-  - ./node_modules/.bin/coveralls < coverage.out
+  - ./node_modules/.bin/coveralls < ./coverage/lcov.info

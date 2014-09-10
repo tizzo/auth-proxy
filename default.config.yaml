@@ -17,3 +17,6 @@ verbose: false
 loginPath: /login
 logoutPath: /proxy-logout
 indexPath: /
+routeWhiteList:
+  - '/css/bootstrap.css'
+  - '/img/glyphicons-halflings.png'

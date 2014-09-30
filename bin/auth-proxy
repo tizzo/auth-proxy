@@ -8,9 +8,9 @@ var proxy = require('../lib/server.js');
 var logger = proxy.logger;
 
 
-// If a config file exists, override the defaults with values
-// from that file.
-var confPath = path.join(__dirname, '..', 'config.yaml');
+// If a config file is specified or is included in the project's directory,
+// override the defaults with values from that file.
+var confPath = process.argv[2] || path.join(__dirname, '..', 'config.yaml');
 
 fs.exists(confPath, function(exists) {
   if (!exists) {

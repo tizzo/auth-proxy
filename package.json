@@ -1,7 +1,7 @@
 {
   "name": "auth-proxy",
   "author": "Howard Tyson",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An authetnicating proxy server protecting operations services.",
   "main": "server.js",
   "bin": {

@@ -1,2 +1,3 @@
 authenticationStrategies:
   MockAuth: {}
+sslCA: test/ssl/testChain.pem

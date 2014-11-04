@@ -2,6 +2,7 @@ name: Authenticating Proxy
 processName: auth-proxy
 host: 127.0.0.1
 cookieDomain: false
+cookieSid: auth_proxy_sid
 port: 3009
 # Set this to `false` to not listen on HTTP.
 httpPort: 3010
@@ -20,3 +21,4 @@ indexPath: /
 routeWhiteList:
   - '/css/bootstrap.css'
   - '/img/glyphicons-halflings.png'
+  - '/favicon.ico'

@@ -56,12 +56,12 @@ describe('Integration', function(){
       });
     };
     var tasks = [
+      app.configure.bind(app, path.join(__dirname, 'config.yaml')),
       checkRedisConnection,
-        app.configure.bind(app, path.join(__dirname, 'config.yaml')),
-        findPorts,
-        startTestServer1,
-        startTestServer2,
-        app.start,
+      findPorts,
+      startTestServer1,
+      startTestServer2,
+      app.start,
     ];
     async.waterfall(tasks, done);
   });

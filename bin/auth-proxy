@@ -4,9 +4,9 @@ var path = require('path');
 var fs = require('fs');
 
 // Include the main application.
-var proxy = require('../lib/server.js');
-var logger = proxy.logger;
-
+var AuthProxy = require('../index.js');
+var proxy = new AuthProxy.Proxy();
+var logger = null;
 
 // If a config file is specified or is included in the project's directory,
 // override the defaults with values from that file.
@@ -17,6 +17,7 @@ fs.exists(confPath, function(exists) {
     confPath = undefined;
   }
   proxy.configure(confPath, function() {
+    logger = proxy.logger;
     proxy.start(function() {
     });
   });

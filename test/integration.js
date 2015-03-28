@@ -1,5 +1,5 @@
 var assert = require("assert")
-var app = require('../index.js');
+var AuthProxy = require('../index.js');
 var request = require('request');
 var http = require('http');
 var async = require('async');
@@ -8,12 +8,16 @@ var MockAuth = require('../lib/plugins/MockAuth.js');
 var path = require('path');
 require('should');
 
+var app = AuthProxy.Proxy;
+
 // We use self-signed certs for testing but unfortunately in
 // some versions of node this global flag seems to be necessary.
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var ports = [];
 var testServers = [];
+
+var app = new app();
 
 describe('Integration', function(){
   before(function(done) {
@@ -125,7 +129,7 @@ describe('Integration', function(){
   });
   it('should allow proxying to an annonymous user for a public route.', function(done) {
     app.setRoutes([
-      new app.Route({
+      new AuthProxy.Route({
         host: '127.0.0.1',
         port: ports[2],
         public: true,
@@ -146,7 +150,7 @@ describe('Integration', function(){
   });
   it('should proxy to a route without any patterns to match', function (done) {
     app.setRoutes([
-      new app.Route({
+      new AuthProxy.Route({
         host: '127.0.0.1',
         port: ports[2]
       })
@@ -172,12 +176,12 @@ describe('Integration', function(){
   });
   it('should proxy to a route based on hostname pattern', function (done) {
     app.setRoutes([
-      new app.Route({
+      new AuthProxy.Route({
         host: '127.0.0.1',
         port: ports[2],
         hostPattern: 'someroute.com',
       }),
-      new app.Route({
+      new AuthProxy.Route({
         host: '127.0.0.1',
         port: ports[3],
         hostPattern: 'otherroute.com',
@@ -216,26 +220,26 @@ describe('Integration', function(){
     options = {};
     options.uri = 'https://127.0.0.1:' + ports[0];
     app.setRoutes([
-      new app.Route({
+      new AuthProxy.Route({
         link: '/bar',
         name: 'Enabled one',
         description: 'Route one',
         hostPattern: 'someroute.com'
       }),
-      new app.Route({
+      new AuthProxy.Route({
         name: 'Enabled two',
         link: '/baz',
         description: 'Route two',
         hostPattern: 'otherroute.com',
       }),
-      new app.Route({
+      new AuthProxy.Route({
         name: 'Disabled',
         link: '/baz',
         description: 'Route three',
         hostPattern: 'thirdrroute.com',
         list: false,
       }),
-      new app.Route({
+      new AuthProxy.Route({
         name: 'Incomplete',
         hostPattern: 'thirdrroute.com',
       })
@@ -254,7 +258,7 @@ describe('Integration', function(){
     var testUser = 'Bart Simpson';
     var testPassword = 'Eat My Shorts';
     app.setRoutes([
-      new app.Route({
+      new AuthProxy.Route({
         'host': '127.0.0.1',
         'port': ports[4],
         'basicAuth': {
@@ -288,13 +292,13 @@ describe('Integration', function(){
   });
   it('should proxy to the appropriate backend based on path pattern.', function(done) {
     app.setRoutes([
-      new app.Route({
+      new AuthProxy.Route({
         host: '127.0.0.1',
         port: ports[2],
         pathPattern: "^/one/?",
         public: true,
       }),
-      new app.Route({
+      new AuthProxy.Route({
         host: '127.0.0.1',
         port: ports[3],
         pathPattern: "^/two/?",
@@ -322,13 +326,13 @@ describe('Integration', function(){
     var slowServer = null;
     // Configure our two routes, one fast one slow.
     app.setRoutes([
-      new app.Route({
+      new AuthProxy.Route({
         'host': '127.0.0.1',
         'port': ports[5],
         'pathPattern': '^/slow/?',
         'public': true
       }),
-      new app.Route({
+      new AuthProxy.Route({
         'host': '127.0.0.1',
         'port': ports[2],
         'pathPattern': '^/fast/?',

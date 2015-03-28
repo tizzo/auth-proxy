@@ -16,7 +16,6 @@ fs.exists(confPath, function(exists) {
   if (!exists) {
     confPath = undefined;
   }
-
   proxy.configure(confPath, function() {
     proxy.start(function() {
     });

@@ -13,6 +13,8 @@ var proxy = new AuthProxy.Proxy();
 var argv = yargs
   .describe('help', 'See available options.')
   .alias('help', 'h')
+  .describe('logger', 'The log format to use (text, json, logstash).')
+  .alias('logger', 'l')
   .describe('port', 'The main port to listen on.')
   .alias('port', 'p')
   .describe('redirect-port', 'The port to listen for unencrypted traffic to be redirected to the secure URL.')
@@ -40,9 +42,9 @@ var argv = yargs
   .describe('verbose', 'Whether to include verbose logging output.')
   .alias('verbose', 'v')
   .describe('login-path', 'The path to use for logging in.')
-  .alias('login-path', 'l')
+  .alias('login-path', 'I')
   .describe('logout-path', 'The path to use for logging out.')
-  .alias('logout-path', 'L')
+  .alias('logout-path', 'O')
   .describe('index-path', 'The path to use for listing all available resources.')
   .alias('index-path', 'i')
   .argv;
@@ -62,9 +64,9 @@ for (i in argv._) {
 
 loader.addAndNormalizeObject(argv);
 
-loader.stopOnError = true;
 var tasks = [
   loader.load,
+  proxy.configure,
   proxy.start,
 ];
 

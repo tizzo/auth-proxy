@@ -1,5 +1,6 @@
 name: Authenticating Proxy
 processName: auth-proxy
+logger: text
 host: 127.0.0.1
 cookieDomain: false
 cookieSid: auth_proxy_sid

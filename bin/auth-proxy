@@ -96,6 +96,10 @@ var shutdownHandler = function() {
 process.on('SIGINT', shutdownHandler);
 
 process.on('SIGHUP', function() {
-  proxy.logger.error('No handler is setup for SIGHUP at this time');
-  process.exit(1);
+  proxy.logger.info('Recieved SIGHUP, reloading configuration.');
+  loader.load(function(error, config) {
+    proxy.configure(config, function() {
+      proxy.logger.info('Configuration reloaded.');
+    });
+  });
 });

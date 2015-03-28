@@ -6,7 +6,8 @@ var async = require('async');
 var MultiPortFinder = require('../lib/test/MultiPortFinder.js');
 var MockAuth = require('../lib/plugins/MockAuth.js');
 var path = require('path');
-require('should');
+var Loader = require('yaml-config-loader');
+var should = require('should');
 
 var app = AuthProxy.Proxy;
 
@@ -63,7 +64,13 @@ describe('Integration', function(){
       });
     };
     var tasks = [
-      app.configure.bind(app, path.join(__dirname, 'config.yaml')),
+      function(cb) {
+        var loader = new Loader();
+        loader.add(__dirname + '/../default.config.yaml');
+        loader.add(__dirname + '/config.yaml');
+        loader.load(cb);
+      },
+      app.configure,
       clearWinstonTransports,
       checkRedisConnection,
       findPorts,

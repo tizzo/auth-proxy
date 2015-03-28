@@ -1,47 +1,99 @@
 #!/usr/bin/env node
 
-var path = require('path');
-var fs = require('fs');
+var yargs = require('yargs');
+var Loader = require('yaml-config-loader');
+var async = require('async');
+
+var loader = new Loader();
 
 // Include the main application.
 var AuthProxy = require('../index.js');
 var proxy = new AuthProxy.Proxy();
-var logger = null;
 
-// If a config file is specified or is included in the project's directory,
-// override the defaults with values from that file.
-var confPath = process.argv[2] || path.join(__dirname, '..', 'config.yaml');
+var argv = yargs
+  .describe('help', 'See available options.')
+  .alias('help', 'h')
+  .describe('port', 'The main port to listen on.')
+  .alias('port', 'p')
+  .describe('redirect-port', 'The port to listen for unencrypted traffic to be redirected to the secure URL.')
+  .alias('redirect-port', 'P')
+  .describe('name', 'The name displayed in the UI.')
+  .alias('name', 'n')
+  .describe('host', 'The hostname used to build links.')
+  .alias('host', 'H')
+  .describe('cookie-domain', 'The domain used on session cookies.')
+  .alias('cookie-domain', 'c')
+  .describe('cookie-sid', 'The session cookie id.')
+  .alias('cookie-sid', 'c')
+  .describe('ssl-cert', 'The path the the SSL certificate, may include a trust chain.')
+  .alias('ssl-cert', 's')
+  .describe('ssl-key', 'The path to the SSL key.')
+  .alias('ssl-key', 's')
+  .describe('redis-host', 'The host to use for the redis connection.')
+  .alias('redis-host', 'r')
+  .describe('redis-port', 'The port to use for the redis connection.')
+  .alias('redis-port', 'r')
+  .describe('session-secret', 'The session secret used to encrypt session data.')
+  .alias('session-secret', 's')
+  .describe('image-url', 'The url for the image to display on the login page.')
+  .alias('image-url', 'i')
+  .describe('verbose', 'Whether to include verbose logging output.')
+  .alias('verbose', 'v')
+  .describe('login-path', 'The path to use for logging in.')
+  .alias('login-path', 'l')
+  .describe('logout-path', 'The path to use for logging out.')
+  .alias('logout-path', 'L')
+  .describe('index-path', 'The path to use for listing all available resources.')
+  .alias('index-path', 'i')
+  .argv;
 
-fs.exists(confPath, function(exists) {
-  if (!exists) {
-    confPath = undefined;
+if (argv.help) {
+  yargs.showHelp();
+  process.exit(0);
+}
+
+loader.add(__dirname + '/../default.config.yaml');
+loader.addAndNormalizeObject(process.env);
+
+var i = 0;
+for (i in argv._) {
+  loader.add(argv._[i]);
+}
+
+loader.addAndNormalizeObject(argv);
+
+loader.stopOnError = true;
+var tasks = [
+  loader.load,
+  proxy.start,
+];
+
+async.waterfall(tasks, function(error) {
+  if (error) {
+    console.error('An unrecoverable error occurred starting auth-proxy.', error);
+    process.exit(1);
   }
-  proxy.configure(confPath, function() {
-    logger = proxy.logger;
-    proxy.start(function() {
-    });
-  });
 });
 
 var shutdownHandler = function() {
-  logger.info('Stop signal received, shutting down.');
+  proxy.logger.info('Stop signal received, shutting down.');
   process.removeListener('SIGINT', shutdownHandler);
   process.on('SIGINT', function() {
-    logger.error('Forcing shutdown without completing graceful shutdown.');
+    proxy.logger.error('Forcing shutdown without completing graceful shutdown.');
     process.exit(1);
   });
   proxy.stop(function() {
-    logger.info('Graceful shutdown complete.');
+    proxy.logger.info('Graceful shutdown complete.');
     process.exit(0);
   });
   setTimeout(function() {
-    logger.error('Graceful shutdown timed out.');
+    proxy.logger.error('Graceful shutdown timed out.');
     process.exit(1);
   }, 500);
 };
 process.on('SIGINT', shutdownHandler);
 
 process.on('SIGHUP', function() {
-  logger.error('No handler is setup for SIGHUP at this time');
+  proxy.logger.error('No handler is setup for SIGHUP at this time');
   process.exit(1);
 });

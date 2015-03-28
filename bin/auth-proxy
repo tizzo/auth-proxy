@@ -13,7 +13,7 @@ var proxy = new AuthProxy.Proxy();
 var argv = yargs
   .describe('help', 'See available options.')
   .alias('help', 'h')
-  .describe('logger', 'The log format to use (text, json, logstash).')
+  .describe('logger', 'The log format to use (text, json, logstash, bunyan).')
   .alias('logger', 'l')
   .describe('port', 'The main port to listen on.')
   .alias('port', 'p')

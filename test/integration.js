@@ -21,6 +21,10 @@ var app = new app();
 
 describe('Integration', function(){
   before(function(done) {
+    var clearWinstonTransports = function(cb) {
+      app.logger.transports = [];
+      cb();
+    };
     var checkRedisConnection = function(cb) {
       if (app.redisClient.connected === true) {
         return cb();
@@ -32,7 +36,6 @@ describe('Integration', function(){
         }
       }, 250);
     };
-    app.logger.transports = [];
     var findPorts = function(cb) {
       MultiPortFinder(7, function(error, foundPorts) {
         ports = foundPorts;
@@ -61,6 +64,7 @@ describe('Integration', function(){
     };
     var tasks = [
       app.configure.bind(app, path.join(__dirname, 'config.yaml')),
+      clearWinstonTransports,
       checkRedisConnection,
       findPorts,
       startTestServer1,

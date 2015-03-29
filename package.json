@@ -20,7 +20,6 @@
     "ejs-locals": ">= 1.0.2",
     "express": "3.9.0",
     "http-proxy": "~1.1.4",
-    "js-yaml": "~3.0.2",
     "mocha": "^1.14.0",
     "mocha-lcov-reporter": "0.0.1",
     "passport": ">= 0.0.0",
@@ -32,7 +31,7 @@
     "request": "~2.12.0",
     "should": "~2.1.0",
     "winston": "^0.9.0",
-    "yaml-config-loader": "^1.1.1",
+    "yaml-config-loader": "^1.2.1",
     "yargs": "^3.6.0"
   },
   "scripts": {

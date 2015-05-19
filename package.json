@@ -10,7 +10,6 @@
     "auth-proxy": "./bin/auth-proxy"
   },
   "dependencies": {
-    "assert": "~0.4.9",
     "async": "~0.2.9",
     "blanket": "~1.1.6",
     "connect-flash": "0.1.x",
@@ -19,9 +18,7 @@
     "ejs": ">= 0.8.4",
     "ejs-locals": ">= 1.0.2",
     "express": "3.9.0",
-    "http-proxy": "~1.1.4",
-    "mocha": "^1.14.0",
-    "mocha-lcov-reporter": "0.0.1",
+    "http-proxy": "~1.11",
     "passport": ">= 0.0.0",
     "passport-drupal": "^0.3.2",
     "passport-google-oauth": "~0.1.5",

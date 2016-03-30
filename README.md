@@ -1,4 +1,4 @@
-# Authenitcating Proxy
+# Authenticating Proxy
 
 [![Build Status](https://travis-ci.org/tizzo/auth-proxy.png?branch=master)](https://travis-ci.org/tizzo/auth-proxy)
 [![Coverage Status](https://coveralls.io/repos/tizzo/auth-proxy/badge.png)](https://coveralls.io/r/tizzo/auth-proxy)
